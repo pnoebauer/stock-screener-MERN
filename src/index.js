@@ -6,9 +6,9 @@ import {DataDAO, StockDataDAO} from './dao/dataDAO';
 
 const port = process.env.PORT || 8000;
 
-console.log('running', process.env.MFLIX_DB_URI);
+console.log('running', process.env.MONGODB_URI);
 
-MongoClient.connect(process.env.MFLIX_DB_URI, {
+MongoClient.connect(process.env.MONGODB_URI, {
 	// wtimeout: 25000,
 	// poolSize: 50,
 	useNewUrlParser: true,
@@ -34,7 +34,7 @@ MongoClient.connect(process.env.MFLIX_DB_URI, {
 
 // const uri =
 // 	'mongodb+srv://<username>:<password>@mflix.awuah.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
-// const client = new MongoClient(process.env.MFLIX_DB_URI, {
+// const client = new MongoClient(process.env.MONGODB_URI, {
 // 	useNewUrlParser: true,
 // 	useUnifiedTopology: true,
 // });

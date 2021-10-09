@@ -5,6 +5,7 @@ const router = new Router();
 
 // associate put, delete, and get(id)
 router.route('/').get(DataCtrl.apiGetData);
-router.route('/AAPL').get(DataCtrl.apiInsertData);
+// router.route('/AAPL').get(DataCtrl.apiInsertData);
+router.route('/AAPL').get(DataCtrl.apiGetStockData);
 
 export default router;

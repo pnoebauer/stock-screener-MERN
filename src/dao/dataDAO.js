@@ -80,7 +80,8 @@ export class StockDataDAO {
 			return;
 		}
 		try {
-			stocks = await conn.db(process.env.STOCK_DATA).collection('historical_prices');
+			// stocks = await conn.db(process.env.STOCK_DATA).collection('historical_prices');
+			stocks = await conn.db('stock_data').collection('historical_prices');
 		} catch (e) {
 			console.error(`Unable to establish collection handles in dataDAO: ${e}`);
 		}
@@ -128,23 +129,36 @@ export class StockDataDAO {
 	}
 
 	static async insertStockHist() {
-		let upsertResult = await stocks.updateOne(
-			// this is the "query" portion of the update
-			{ticker: 'AAPL', timestamp: new Date()},
-			// this is the update
-			{
-				$set: {
-					timestamp: new Date(),
-					open: '154.8',
-					high: '164.8',
-					low: '124.8',
-					close: '134.8',
+		// var myDate = new Date(2014, 11, 12, 0, 0);
+		var myDate = new Date('10/16/1995Z');
+
+		try {
+			let upsertResult = await stocks.updateOne(
+				// this is the "query" portion of the update
+				{ticker: 'AAPL', timestamp: myDate},
+				// this is the update
+				{
+					$set: {
+						// timestamp: new Date(),
+						timestamp: myDate,
+						open: 154.1,
+						high: 164.1,
+						low: 124.1,
+						close: 134.1,
+					},
 				},
-			},
-			// this is the options document. We've specified upsert: true, so if the
-			// query doesn't find a document to update, it will be written instead as
-			// a new document
-			{upsert: true}
-		);
+				// this is the options document. We've specified upsert: true, so if the
+				// query doesn't find a document to update, it will be written instead as
+				// a new document
+				{upsert: true}
+			);
+
+			// console.log({upsertResult});
+
+			return {success: true};
+		} catch (e) {
+			console.error(`Error occurred while updating stock, ${e}`);
+			return {error: e};
+		}
 	}
 }

@@ -5,13 +5,10 @@
 		"node": "16.0.0",
 		"npm": "7.22.0"
 	},
+	"main": "index.js",
 	"scripts": {
-		"client": "cd client && npm start",
-		"server": "nodemon server.js",
-		"build": "cd client && npm run build",
-		"dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-		"start": "node server.js",
-		"heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+		"start": "node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"dependencies": {
 		"cors": "2.8.5",

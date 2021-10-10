@@ -1,32 +1,32 @@
 "use strict";
 
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.StockDataDAO = exports.DataDAO = void 0;
 
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
 var zips, stocks;
 
 var DataDAO = /*#__PURE__*/function () {
   function DataDAO() {
-    _classCallCheck(this, DataDAO);
+    (0, _classCallCheck2["default"])(this, DataDAO);
   }
 
-  _createClass(DataDAO, null, [{
+  (0, _createClass2["default"])(DataDAO, null, [{
     key: "injectDB",
     value: function () {
-      var _injectDB = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(conn) {
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+      var _injectDB = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(conn) {
+        return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -72,7 +72,7 @@ var DataDAO = /*#__PURE__*/function () {
   }, {
     key: "getZips",
     value: function () {
-      var _getZips = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+      var _getZips = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
         var _ref,
             _ref$filters,
             filters,
@@ -87,7 +87,7 @@ var DataDAO = /*#__PURE__*/function () {
             totalNumZips,
             _args2 = arguments;
 
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return _regenerator["default"].wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -185,7 +185,6 @@ var DataDAO = /*#__PURE__*/function () {
       return getZips;
     }()
   }]);
-
   return DataDAO;
 }();
 
@@ -193,14 +192,14 @@ exports.DataDAO = DataDAO;
 
 var StockDataDAO = /*#__PURE__*/function () {
   function StockDataDAO() {
-    _classCallCheck(this, StockDataDAO);
+    (0, _classCallCheck2["default"])(this, StockDataDAO);
   }
 
-  _createClass(StockDataDAO, null, [{
+  (0, _createClass2["default"])(StockDataDAO, null, [{
     key: "injectDB",
     value: function () {
-      var _injectDB2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(conn) {
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      var _injectDB2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(conn) {
+        return _regenerator["default"].wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -243,7 +242,7 @@ var StockDataDAO = /*#__PURE__*/function () {
   }, {
     key: "getPrices",
     value: function () {
-      var _getPrices = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+      var _getPrices = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
         var _ref2,
             _ref2$filters,
             filters,
@@ -257,7 +256,7 @@ var StockDataDAO = /*#__PURE__*/function () {
             totalNumPrices,
             _args4 = arguments;
 
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return _regenerator["default"].wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -344,9 +343,9 @@ var StockDataDAO = /*#__PURE__*/function () {
   }, {
     key: "insertStockHist",
     value: function () {
-      var _insertStockHist = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+      var _insertStockHist = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
         var myDate, upsertResult;
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return _regenerator["default"].wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -404,7 +403,6 @@ var StockDataDAO = /*#__PURE__*/function () {
       return insertStockHist;
     }()
   }]);
-
   return StockDataDAO;
 }();
 

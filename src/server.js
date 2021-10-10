@@ -20,10 +20,10 @@ app.use('/api/v1/user', data);
 // app.use('/api/v1/movies', movies);
 // app.use('/api/v1/user', users);
 // app.use('/status', express.static('build'));
-// app.use('/', express.static('build'));
-app.get('/', (req, res) => {
-	res.json('This is working');
-});
+app.use('/', express.static('build'));
+// app.get('/', (req, res) => {
+// 	res.json('This is working');
+// });
 
 // app.use('*', (req, res) => res.status(404).json({error: 'not found'}));
 

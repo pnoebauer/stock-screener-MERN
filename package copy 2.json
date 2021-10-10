@@ -1,0 +1,29 @@
+{
+	"name": "stock-screener-mern-stack",
+	"version": "1.0.0",
+	"engines": {
+		"node": "16.0.0",
+		"npm": "7.22.0"
+	},
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"cors": "2.8.5",
+		"dotenv": "7.0.0",
+		"express": "^4.16.4",
+		"express-sslify": "^1.2.0",
+		"isomorphic-fetch": "^3.0.0",
+		"regression": "^2.0.1",
+		"mongodb": "^3.1.6"
+	},
+	"devDependencies": {
+		"concurrently": "^4.0.1",
+		"nodemon": "^1.19.1",
+		"@babel/core": "^7.2.0",
+		"@babel/preset-env": "^7.2.0",
+		"@babel/register": "^7.0.0"
+	}
+}

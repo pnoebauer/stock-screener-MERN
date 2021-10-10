@@ -1,21 +1,23 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
 
-var _express = require("express");
+var _express = require('express');
 
-var _Data = _interopRequireDefault(require("./Data.controller"));
+var _Data = require('./Data.controller');
+
+var _Data2 = _interopRequireDefault(_Data);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const router = new _express.Router(); // associate put, delete, and get(id)
+var router = new _express.Router();
 
-router.route('/').get(_Data.default.apiGetData); // router.route('/AAPL').get(DataCtrl.apiInsertData);
+// associate put, delete, and get(id)
+router.route('/').get(_Data2.default.apiGetData);
+// router.route('/AAPL').get(DataCtrl.apiInsertData);
+router.route('/AAPL').get(_Data2.default.apiGetStockData);
 
-router.route('/AAPL').get(_Data.default.apiGetStockData);
-var _default = router;
-exports.default = _default;
+exports.default = router;
 //# sourceMappingURL=data.route.js.map

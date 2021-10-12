@@ -1,4 +1,7 @@
 import fetch from 'isomorphic-fetch';
+import util from 'util';
+
+import {StockDataDAO} from '../dao/dataDAO';
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
@@ -41,10 +44,13 @@ export class FetchData {
 				(do not enter a start date)
 				or based on start and end date
 			----------------------
-			*/
-		// fetchData(urlRealTime, symbol);
-		// /v1/marketdata/GOOGL/pricehistory?apikey=APRKWXOAWALLEUMXPY1FCGHQZ5HDJGKD&periodType=day&frequencyType=minute&frequency=1&endDate=1617271200000&startDate=1609495200000&needExtendedHoursData=true
-		// const startDate = new Date(1990, 0, 1, 0, 0);
+		*/
+
+		/*
+			----------------------
+				USE OF PERIODS
+			----------------------
+
 		const startDate = new Date(2000, 0, 1, 0, 0);
 		// const startDateUnix = startDate.getTime() - startDate.getTimezoneOffset() * 60 * 1000; //UTC time
 		const startDateUnix = startDate.getTime(); //getTime already returns in UTC
@@ -54,6 +60,8 @@ export class FetchData {
 		// const endDateUnix = endDate.getTime() - endDate.getTimezoneOffset() * 60 * 1000;
 		const endDateUnix = endDate.getTime(); //getTime already returns in UTC
 		// console.log(startDateUnix, endDateUnix);
+		*/
+
 		/* 	// Valid periods by periodType:
 			// day: 1, 2, 3, 4, 5, 10*
 			// month: 1*, 2, 3, 6
@@ -95,44 +103,78 @@ export class FetchData {
 }
 
 let lastHistoricalUpdate;
-let dailyUpdateHasRun;
+let dailyUpdateHasRun = false;
 let timerId;
 
 const splits = 5;
-const interValTime = 1000;
+const interValTime = 60000;
 // const symbolsPerSplit = Math.round(SYMBOLS.length / splits);
 
 export class DataUpdates {
+	static async updateHistory(numberYears) {
+		const symbols = ['AAPL', 'GOOGL'];
+
+		for (let i = 0; i < symbols.length; i++) {
+			const symbol = symbols[i];
+
+			const data = await FetchData.fetchHistoricalData(
+				symbol,
+				numberYears,
+				'year',
+				1,
+				'daily'
+			);
+
+			console.log(data);
+
+			const insertStatus = await StockDataDAO.insertStockHist(data);
+
+			console.log(insertStatus);
+
+			// const candles = data.candles.map(candle => ({
+			// 	...candle,
+			// 	datetime: new Date(candle.datetime),
+			// }));
+
+			// console.log(data.candles[0], candles[0]);
+		}
+	}
+
 	static async triggerUpdates() {
 		if (timerId) {
 			return;
-		}
-		timerId = setInterval(async () => {
-			console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
+		} else {
+			lastHistoricalUpdate = new Date().getDate();
+			// dailyUpdateHasRun = await historicalDataIntoDB(UNIVERSES, SYMBOLS, numberYears);
+			dailyUpdateHasRun = await this.updateHistory(1);
 
-			// await regularDataUpdate();
+			timerId = setInterval(async () => {
+				// console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
 
-			// run only once a day
-			if (new Date().getDate() !== lastHistoricalUpdate) {
-				dailyUpdateHasRun = false;
-				console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
-
-				lastHistoricalUpdate = new Date().getDate();
-
-				// on the weekend update the last 20 years, during the week only the last 1 year
-				const numberYears = new Date().getDay() < 6 ? 1 : 20;
-
-				// dailyUpdateHasRun = await historicalDataIntoDB(UNIVERSES, SYMBOLS, numberYears);
-
-				dailyUpdateHasRun = true;
-				// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
-			}
-			// make sure that the daily update has run before continuing with the regular updates so that the API limit is not exceeded
-			else if (dailyUpdateHasRun) {
-				console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
 				// await regularDataUpdate();
-			}
-		}, interValTime);
+
+				// run only once a day
+				if (new Date().getDate() !== lastHistoricalUpdate) {
+					dailyUpdateHasRun = false;
+					console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
+
+					lastHistoricalUpdate = new Date().getDate();
+
+					// on the weekend update the last 20 years, during the week only the last 1 year
+					const numberYears = new Date().getDay() < 6 ? 1 : 20;
+
+					// dailyUpdateHasRun = await historicalDataIntoDB(UNIVERSES, SYMBOLS, numberYears);
+
+					dailyUpdateHasRun = true;
+					// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
+				}
+				// make sure that the daily update has finished before continuing with the regular updates so that the API limit is not exceeded
+				else if (!util.inspect(dailyUpdateHasRun).includes('pending')) {
+					console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
+					// await regularDataUpdate();
+				}
+			}, interValTime);
+		}
 	}
 }
 

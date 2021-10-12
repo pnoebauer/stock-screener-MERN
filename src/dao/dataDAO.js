@@ -133,30 +133,78 @@ export class StockDataDAO {
 		}
 	}
 
-	static async insertStockHist() {
+	static async insertStockHist(data) {
 		// var myDate = new Date(2014, 11, 12, 0, 0);
-		var myDate = new Date('10/16/1995Z');
+		// var myDate = new Date('10/16/1995Z');
+
+		const {candles, symbol, empty} = data;
+
+		if (empty) return;
 
 		try {
-			let upsertResult = await stocks.updateOne(
-				// this is the "query" portion of the update
-				{ticker: 'GOOGL', timestamp: myDate},
-				// this is the update
-				{
-					$set: {
-						// timestamp: new Date(),
-						timestamp: myDate,
-						open: 154.1,
-						high: 164.1,
-						low: 124.1,
-						close: 134.1,
+			const candlesToInsert = candles.map(candle => ({
+				updateOne: {
+					filter: {ticker: symbol, datetime: new Date(candle.datetime)},
+					update: {
+						$set: {
+							open: candle.open,
+							high: candle.high,
+							low: candle.low,
+							close: candle.close,
+							volume: candle.volume,
+						},
 					},
+					upsert: true,
 				},
-				// this is the options document. We've specified upsert: true, so if the
-				// query doesn't find a document to update, it will be written instead as
-				// a new document
-				{upsert: true}
-			);
+			}));
+
+			// TODO: Complete the BulkWrite statement below
+			const {modifiedCount} = await stocks.bulkWrite(candlesToInsert);
+
+			// for (let i = 0; i < candles.length; i++) {
+			// 	try {
+			// 		await stocks.updateOne(
+			// 			// this is the "query" portion of the update
+			// 			{ticker: symbol, datetime: new Date(candles[i].datetime)},
+			// 			// this is the update
+			// 			{
+			// 				$set: {
+			// 					open: candles[i].open,
+			// 					high: candles[i].high,
+			// 					low: candles[i].low,
+			// 					close: candles[i].close,
+			// 					volume: candles[i].volume,
+			// 				},
+			// 			},
+			// 			// this is the options document. We've specified upsert: true, so if the
+			// 			// query doesn't find a document to update, it will be written instead as
+			// 			// a new document
+			// 			{upsert: true}
+			// 		);
+			// 	} catch (e) {
+			// 		console.error(`Error inserting ${symbol} for new Date(candle.datetime) ${e}`);
+			// 	}
+			// }
+
+			// let upsertResult = await stocks.updateOne(
+			// 	// this is the "query" portion of the update
+			// 	{ticker: 'GOOGL', timestamp: myDate},
+			// 	// this is the update
+			// 	{
+			// 		$set: {
+			// 			// timestamp: new Date(),
+			// 			timestamp: myDate,
+			// 			open: 154.1,
+			// 			high: 164.1,
+			// 			low: 124.1,
+			// 			close: 134.1,
+			// 		},
+			// 	},
+			// 	// this is the options document. We've specified upsert: true, so if the
+			// 	// query doesn't find a document to update, it will be written instead as
+			// 	// a new document
+			// 	{upsert: true}
+			// );
 
 			// console.log({upsertResult});
 

@@ -2,7 +2,7 @@ import express from 'express';
 
 import cors from 'cors';
 
-import data from './api/data.route';
+// import data from './api/data.route';
 
 const app = express();
 
@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use('/api/v1/user', data);
+// app.use('/api/v1/user', data);
 
 // // Register api routes
 // app.use('/api/v1/movies', movies);

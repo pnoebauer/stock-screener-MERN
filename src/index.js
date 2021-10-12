@@ -21,8 +21,8 @@ import {MongoClient} from 'mongodb';
 
 require('dotenv').config();
 
-import {DataDAO, StockDataDAO} from './dao/dataDAO';
-import DataCtrl from '../src/api/data.controller';
+// import {DataDAO, StockDataDAO} from './dao/dataDAO';
+// import DataCtrl from '../src/api/data.controller';
 
 const port = process.env.PORT || 8000;
 
@@ -40,8 +40,8 @@ MongoClient.connect(process.env.MONGODB_URI, {
 	})
 	.then(async client => {
 		// console.log(client);
-		await DataDAO.injectDB(client);
-		await StockDataDAO.injectDB(client);
+		// await DataDAO.injectDB(client);
+		// await StockDataDAO.injectDB(client);
 
 		// DataCtrl.apiGetStockData();
 

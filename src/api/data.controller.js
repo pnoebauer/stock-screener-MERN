@@ -49,6 +49,6 @@ export default class DataController {
 		// };
 		// res.json(response);
 
-		res.json(result);
+		// res.json(result);
 	}
 }

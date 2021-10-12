@@ -22,7 +22,7 @@ import {MongoClient} from 'mongodb';
 require('dotenv').config();
 
 import {DataDAO, StockDataDAO} from './dao/dataDAO';
-// import DataCtrl from '../src/api/data.controller';
+import DataCtrl from '../src/api/data.controller';
 
 const port = process.env.PORT || 8000;
 
@@ -43,7 +43,7 @@ MongoClient.connect(process.env.MONGODB_URI, {
 		// await DataDAO.injectDB(client);
 		await StockDataDAO.injectDB(client);
 
-		// DataCtrl.apiGetStockData();
+		DataCtrl.apiGetStockData();
 
 		app.listen(port, () => {
 			console.log(`listening on port ${port}`);

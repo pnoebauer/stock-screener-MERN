@@ -25,7 +25,7 @@ var _dataDAO = require("./dao/dataDAO");
 // import 'core-js';
 require('dotenv').config();
 
-// // import DataCtrl from '../src/api/data.controller';
+// import DataCtrl from './api/data.controller';
 var port = process.env.PORT || 8000; // console.log('running', process.env.MONGODB_URI);
 
 _mongodb.MongoClient.connect(process.env.MONGODB_URI, {
@@ -46,16 +46,17 @@ _mongodb.MongoClient.connect(process.env.MONGODB_URI, {
             return _dataDAO.DataDAO.injectDB(client);
 
           case 2:
-            // await StockDataDAO.injectDB(client);
-            // await UsersDAO.injectDB(client);
-            // await CommentsDAO.injectDB(client);
-            // 		// DataCtrl.apiGetData();
+            _context.next = 4;
+            return _dataDAO.StockDataDAO.injectDB(client);
+
+          case 4:
+            // DataCtrl.apiGetStockData();
             _server["default"].listen(port, function () {
               console.log("listening on port ".concat(port));
             }); // console.log(`listening on port ${port}`);
 
 
-          case 3:
+          case 5:
           case "end":
             return _context.stop();
         }

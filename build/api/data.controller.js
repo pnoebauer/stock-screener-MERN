@@ -48,10 +48,9 @@ var DataController = /*#__PURE__*/function () {
                 // 	total_results: totalNumMovies,
                 // };
                 // res.json(response);
+                // res.json(result);
 
-                res.json(result);
-
-              case 5:
+              case 4:
               case "end":
                 return _context.stop();
             }

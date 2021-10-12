@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import DataCtrl from './Data.controller';
+import DataCtrl from './data.controller';
 
 const router = new Router();
 

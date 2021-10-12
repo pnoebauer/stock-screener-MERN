@@ -1,7 +1,6 @@
 {
 	"name": "stock-screener-mern-stack",
 	"version": "1.0.0",
-	"type": "module",
 	"engines": {
 		"node": "16.0.0",
 		"npm": "7.22.0"

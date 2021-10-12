@@ -13,7 +13,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.use('/api/v1/user', data);
+// app.use('/api/v1/user', data);
+// app.use('/events/:id', data);
+app.use('/api/v1/live', data);
 
 const port = process.env.PORT || 8000;
 // // Register api routes
@@ -22,7 +24,7 @@ const port = process.env.PORT || 8000;
 // app.use('/status', express.static('build'));
 // app.use('/', express.static('build'));
 app.get('/', (req, res) => {
-	res.json(`This is working ${port}`);
+	res.json(`Running on port ${port}`);
 });
 
 // app.use('*', (req, res) => res.status(404).json({error: 'not found'}));

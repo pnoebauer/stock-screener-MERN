@@ -22,7 +22,8 @@ import {MongoClient} from 'mongodb';
 require('dotenv').config();
 
 import {DataDAO, StockDataDAO} from './dao/dataDAO';
-// import DataCtrl from './api/data.controller';
+import DataCtrl from './api/data.controller';
+import {FetchData, DataUpdates} from './utils/fetchData';
 
 const port = process.env.PORT || 8000;
 
@@ -43,7 +44,15 @@ MongoClient.connect(process.env.MONGODB_URI, {
 		await DataDAO.injectDB(client);
 		await StockDataDAO.injectDB(client);
 
+		await DataUpdates.triggerUpdates();
+
 		// DataCtrl.apiGetStockData();
+		const prices = await StockDataDAO.getPrices();
+		console.log({prices});
+
+		// await StockDataDAO.insertStockHist();
+		// const data = await FetchData.fetchLiveData(['GOOGL']);
+		// console.log({data});
 
 		app.listen(port, () => {
 			console.log(`listening on port ${port}`);

@@ -36,8 +36,15 @@ export default class DataController {
 	}
 
 	static async apiGetStockData(req, res, next) {
-		const result = await StockDataDAO.getPrices();
-		console.log({result});
+		let {ticker} = req.params;
+		// console.log(req.params);
+		ticker = ticker.toUpperCase().split(',');
+		// console.log(ticker);
+
+		const result = await StockDataDAO.getPrices({ticker});
+
+		// console.log({result}, req.params);
+
 		// const MOVIES_PER_PAGE = 20;
 		// const { moviesList, totalNumMovies } = await MoviesDAO.getMovies();
 		// let response = {

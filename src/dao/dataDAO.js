@@ -89,6 +89,7 @@ export class StockDataDAO {
 
 	static async getPrices({
 		// here's where the default parameters are set for the getMovies method
+		ticker = ['AAPL'],
 		filters = null,
 		page = 0,
 		pricesPerPage = 20,
@@ -96,7 +97,9 @@ export class StockDataDAO {
 		let cursor;
 
 		try {
-			cursor = await stocks.find();
+			// cursor = await stocks.find();
+			// cursor = await stocks.find({ticker});
+			cursor = await stocks.find({ticker: {$in: ticker}});
 
 			// console.log(cursor.toArray());
 			// .project(project)
@@ -107,6 +110,7 @@ export class StockDataDAO {
 		}
 
 		// const pricesList = await cursor.toArray();
+		// console.log({pricesList});
 		// return {pricesList};
 
 		const displayCursor = cursor.skip(pricesPerPage * page).limit(pricesPerPage);
@@ -116,8 +120,9 @@ export class StockDataDAO {
 
 		try {
 			const pricesList = await displayCursor.toArray();
+			// const totalNumPrices = page === 0 ? await stocks.countDocuments({ticker}) : 0;
 			const totalNumPrices =
-				page === 0 ? await stocks.countDocuments({ticker: 'AAPL'}) : 0;
+				page === 0 ? await stocks.countDocuments({ticker: {$in: ticker}}) : 0;
 
 			return {pricesList, totalNumPrices};
 		} catch (e) {
@@ -135,7 +140,7 @@ export class StockDataDAO {
 		try {
 			let upsertResult = await stocks.updateOne(
 				// this is the "query" portion of the update
-				{ticker: 'AAPL', timestamp: myDate},
+				{ticker: 'GOOGL', timestamp: myDate},
 				// this is the update
 				{
 					$set: {

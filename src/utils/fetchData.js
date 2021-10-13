@@ -106,7 +106,7 @@ export class FetchData {
 }
 
 let lastHistoricalUpdate;
-let dailyUpdateHasRun = false;
+let dailyHistoryUpdate = false;
 let timerId;
 
 const interValTime = 60000;
@@ -623,8 +623,6 @@ let cachedData = {};
 
 export class DataUpdates {
 	static async updateHistory(multiplier, interval) {
-		// const symbols = ['AAPL', 'GOOGL'];
-
 		for (let i = 0; i < symbols.length; i++) {
 			const symbol = symbols[i];
 			console.log({symbol, i});
@@ -661,11 +659,10 @@ export class DataUpdates {
 				console.log('error during fetching', data.error);
 				return;
 			}
-			// console.time('time');
 			// check if data has changed since the last fetch
 			const identical = ProcessContinuousData.compareCacheWithFetch(data);
-			console.log(identical, 'identical');
 
+			console.log('setting data', new Date().getMinutes(), new Date().getSeconds());
 			cachedData = data;
 
 			// if the data has changed since the last fetch send it to all clients
@@ -686,38 +683,42 @@ export class DataUpdates {
 	}
 
 	static async triggerUpdates() {
-		await this.updateContinuousData();
-		// if (timerId) {
-		// 	return;
-		// } else {
-		// 	lastHistoricalUpdate = new Date().getDate();
-		// 	// dailyUpdateHasRun = await historicalDataIntoDB(UNIVERSES, SYMBOLS, numberYears);
-		// 	dailyUpdateHasRun = await this.updateHistory(1, 'month');
+		// await this.updateContinuousData();
+		if (timerId) {
+			return;
+		} else {
+			lastHistoricalUpdate = new Date().getDate();
+			dailyHistoryUpdate = await this.updateHistory(1, 'month');
 
-		// 	timerId = setInterval(async () => {
-		// 		// console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
-		// 		// run only once a day
-		// 		if (new Date().getDate() !== lastHistoricalUpdate) {
-		// 			dailyUpdateHasRun = false;
-		// 			console.log(new Date().getDate(), lastHistoricalUpdate, 'different');
+			timerId = setInterval(async () => {
+				// console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);
+				// run only once a day
+				if (new Date().getDate() !== lastHistoricalUpdate) {
+					dailyHistoryUpdate = false; //comment out
+					console.log('updateHistory', {
+						today: new Date().getDate(),
+						lastHistoricalUpdate,
+					});
 
-		// 			lastHistoricalUpdate = new Date().getDate();
+					lastHistoricalUpdate = new Date().getDate();
 
-		// 			// on the weekend update the last 20 years, during the week only the last 1 year
-		// 			const multiplier = new Date().getDay() < 6 ? 1 : 20;
-		// 			// const interval = 'year';
-		// 			const interval = 'month';
+					// on the weekend update the last 20 years, during the week only the last 1 year
+					const multiplier = new Date().getDay() < 6 ? 1 : 20;
+					// const interval = 'year';
+					const interval = 'month';
 
-		// 			dailyUpdateHasRun = await this.updateHistory(multiplier, interval);
-		// 			// console.log(dailyUpdateHasRun, 'dailyUpdateHasRun');
-		// 		}
-		// 		// make sure that the daily update has finished before continuing with the regular updates so that the API limit is not exceeded
-		// 		else if (!util.inspect(dailyUpdateHasRun).includes('pending')) {
-		// 			console.log(new Date().getDate(), lastHistoricalUpdate, 'equal');
-		// 			await this.updateContinuousData();
-		// 		}
-		// 	}, interValTime);
-		// }
+					dailyHistoryUpdate = await this.updateHistory(multiplier, interval);
+				}
+				// make sure that the daily update has finished before continuing with the regular updates so that the API limit is not exceeded
+				else if (!util.inspect(dailyHistoryUpdate).includes('pending')) {
+					console.log('updateContinuousData', {
+						today: new Date().getDate(),
+						lastHistoricalUpdate,
+					});
+					await this.updateContinuousData();
+				}
+			}, interValTime);
+		}
 	}
 }
 

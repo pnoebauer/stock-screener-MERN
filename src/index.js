@@ -1,29 +1,10 @@
-// require('dotenv').config();
-
-// import express from 'express';
-
-// const app = express();
-
-// app.get('/', (req, res) => {
-// 	res.status(200).json({message: 'Welcome to Node.js & Express'});
-// });
-
-// const port = process.env.PORT || 8000;
-
-// app.listen(port, () => {
-// 	console.log(`App is running on port ${port}`);
-// });
-
-// import 'core-js';
-
 import app from './server';
 import {MongoClient} from 'mongodb';
 
 require('dotenv').config();
 
 import {StockDataDAO} from './dao/dataDAO';
-import DataCtrl from './api/data.controller';
-import {FetchData, DataUpdates} from './utils/fetchData';
+import {DataUpdates} from './utils/fetchData';
 
 const port = process.env.PORT || 8000;
 
@@ -44,17 +25,6 @@ MongoClient.connect(process.env.MONGODB_URI, {
 
 		await StockDataDAO.injectDB(client);
 
-		// DataCtrl.apiGetStockData();
-		// const prices = await StockDataDAO.getPrices();
-		// console.log({prices});
-
-		// await StockDataDAO.insertStockHist();
-		// const data = await FetchData.fetchLiveData(['GOOGL']);
-		// console.log({data});
-
-		// app.listen(port, () => {
-		// 	console.log(`listening on port ${port}`);
-		// });
 		const server = app.listen(port, () => {
 			console.log(`listening on port ${port}`);
 		});

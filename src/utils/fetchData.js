@@ -39,6 +39,8 @@ export class FetchData {
 				// retries: 3,
 				retryDelay: 10000,
 				retryOn: async function (attempt, error, response) {
+					console.log({attempt});
+
 					if (attempt > 5) return false;
 
 					if (error) {
@@ -46,14 +48,17 @@ export class FetchData {
 						return true;
 					}
 
-					if (error !== null) {
-						const data = await response.json();
-						console.log({empty: data.empty, attempt});
-						if (data.empty || data.error) {
-							console.log({dataError: data.error, attempt});
-							return true;
-						}
+					// if (error !== null) {
+					const data = await response.json();
+					console.log({empty: data.empty, attempt});
+					if (data.candles) console.log(data.candles[0]);
+					else console.log(data);
+
+					if (data.empty || data.error) {
+						console.log({dataError: data.error, attempt});
+						return true;
 					}
+					// }
 				},
 			});
 			// console.log({response});

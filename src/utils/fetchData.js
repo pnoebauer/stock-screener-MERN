@@ -35,6 +35,8 @@ export class FetchData {
 		const queryString = `${url}?${queryExt}`;
 		// console.log({apikey}, {queryString});
 		try {
+			let data;
+
 			const response = await fetch(queryString, {
 				// retries: 3,
 				retryDelay: 10000,
@@ -49,7 +51,7 @@ export class FetchData {
 					}
 
 					// if (error !== null) {
-					const data = await response.json();
+					data = await response.json();
 					console.log({empty: data.empty, attempt});
 
 					if (data.candles) {
@@ -66,7 +68,7 @@ export class FetchData {
 				},
 			});
 			// console.log({response});
-			const data = await response.json();
+			// const data = await response.json();
 			// console.log({data});
 			return data;
 		} catch (e) {

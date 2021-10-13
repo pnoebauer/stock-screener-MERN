@@ -49,7 +49,8 @@ export class FetchData {
 					if (error !== null) {
 						const data = await response.json();
 						console.log({empty: data.empty, attempt});
-						if (data.empty) {
+						if (data.empty || data.error) {
+							console.log({dataError: data.error, attempt});
 							return true;
 						}
 					}

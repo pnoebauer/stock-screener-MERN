@@ -117,7 +117,7 @@ export class StockDataDAO {
 
 			return {success: true};
 		} catch (e) {
-			console.error(`Error occurred while updating stock, ${e}`);
+			console.error(`Error occurred while updating stock, ${e}`, {data});
 			return {error: e};
 		}
 	}

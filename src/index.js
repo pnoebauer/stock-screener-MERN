@@ -21,7 +21,7 @@ import {MongoClient} from 'mongodb';
 
 require('dotenv').config();
 
-import {DataDAO, StockDataDAO} from './dao/dataDAO';
+import {StockDataDAO} from './dao/dataDAO';
 import DataCtrl from './api/data.controller';
 import {FetchData, DataUpdates} from './utils/fetchData';
 
@@ -41,21 +41,31 @@ MongoClient.connect(process.env.MONGODB_URI, {
 	})
 	.then(async client => {
 		// console.log(client);
-		await DataDAO.injectDB(client);
+
 		await StockDataDAO.injectDB(client);
 
 		await DataUpdates.triggerUpdates();
 
 		// DataCtrl.apiGetStockData();
-		const prices = await StockDataDAO.getPrices();
-		console.log({prices});
+		// const prices = await StockDataDAO.getPrices();
+		// console.log({prices});
 
 		// await StockDataDAO.insertStockHist();
 		// const data = await FetchData.fetchLiveData(['GOOGL']);
 		// console.log({data});
 
-		app.listen(port, () => {
+		// app.listen(port, () => {
+		// 	console.log(`listening on port ${port}`);
+		// });
+		const server = app.listen(port, () => {
 			console.log(`listening on port ${port}`);
 		});
+		server.keepAliveTimeout = 61 * 1000;
+
+		// etimeout
+		// https://stackoverflow.com/questions/23632914/how-to-handle-etimedout-error#:~:text=This%20is%20caused%20when%20your,t%20be%20thrown%20anymore%3A%20out.
+		// const server = app.listen(8080);
+		// server.keepAliveTimeout = 61 * 1000;
+
 		// console.log(`listening on port ${port}`);
 	});

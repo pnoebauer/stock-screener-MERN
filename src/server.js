@@ -15,7 +15,7 @@ app.use(express.urlencoded({extended: true}));
 
 // app.use('/api/v1/user', data);
 // app.use('/events/:id', data);
-app.use('/api/v1/live', data);
+app.use('/api/v1/prices', data);
 
 const port = process.env.PORT || 8000;
 // // Register api routes

@@ -41,6 +41,11 @@ export class FetchData {
 				retryOn: async function (attempt, error, response) {
 					if (attempt > 5) return false;
 
+					if (error) {
+						console.log({error, attempt});
+						return true;
+					}
+
 					if (error !== null) {
 						const data = await response.json();
 						console.log({empty: data.empty, attempt});

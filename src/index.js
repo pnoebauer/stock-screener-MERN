@@ -44,8 +44,6 @@ MongoClient.connect(process.env.MONGODB_URI, {
 
 		await StockDataDAO.injectDB(client);
 
-		await DataUpdates.triggerUpdates();
-
 		// DataCtrl.apiGetStockData();
 		// const prices = await StockDataDAO.getPrices();
 		// console.log({prices});
@@ -61,6 +59,8 @@ MongoClient.connect(process.env.MONGODB_URI, {
 			console.log(`listening on port ${port}`);
 		});
 		server.keepAliveTimeout = 61 * 1000;
+
+		await DataUpdates.triggerUpdates();
 
 		// etimeout
 		// https://stackoverflow.com/questions/23632914/how-to-handle-etimedout-error#:~:text=This%20is%20caused%20when%20your,t%20be%20thrown%20anymore%3A%20out.

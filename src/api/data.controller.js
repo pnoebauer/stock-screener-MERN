@@ -44,7 +44,7 @@ export default class DataController {
 	}
 
 	static async apiGetLiveStockData(req, res, next) {
-		const result = await DataUpdates.getLiveData();
+		const result = DataUpdates.getLiveData();
 
 		// console.log({result});
 

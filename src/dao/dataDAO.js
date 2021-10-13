@@ -85,8 +85,10 @@ export class StockDataDAO {
 			}));
 
 			const {nUpserted, nModified} = await stocks.bulkWrite(candlesToInsert);
-
 			console.log({nUpserted, nModified, length: candles.length});
+
+			// const res = await stocks.bulkWrite(candlesToInsert);
+			// console.log({res});
 
 			// console.log({modifiedCount, length: candles.length});
 

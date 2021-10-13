@@ -1,4 +1,12 @@
-import fetch from 'isomorphic-fetch';
+// import fetch from 'isomorphic-fetch';
+
+import originalFetch from 'isomorphic-fetch';
+import retryFetch from 'fetch-retry';
+const fetch = retryFetch(originalFetch);
+
+// var originalFetch = require('isomorphic-fetch');
+// var fetch = require('fetch-retry')(originalFetch);
+
 import util from 'util';
 
 import {API_TO_INDICATORS} from '../assets/constants';
@@ -27,9 +35,24 @@ export class FetchData {
 		const queryString = `${url}?${queryExt}`;
 		// console.log({apikey}, {queryString});
 		try {
-			const response = await fetch(queryString);
+			const response = await fetch(queryString, {
+				// retries: 3,
+				retryDelay: 10000,
+				retryOn: async function (attempt, error, response) {
+					if (attempt > 5) return false;
+
+					if (error !== null) {
+						const data = await response.json();
+						console.log({empty: data.empty, attempt});
+						if (data.empty) {
+							return true;
+						}
+					}
+				},
+			});
+			// console.log({response});
 			const data = await response.json();
-			// console.log(data);
+			// console.log({data});
 			return data;
 		} catch (e) {
 			console.log('error fetch data', e);
@@ -625,6 +648,7 @@ export class DataUpdates {
 	static async updateHistory(multiplier, interval) {
 		for (let i = 0; i < symbols.length; i++) {
 			const symbol = symbols[i];
+
 			console.log({symbol, i});
 
 			try {

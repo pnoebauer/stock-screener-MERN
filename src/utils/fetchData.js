@@ -51,8 +51,12 @@ export class FetchData {
 					// if (error !== null) {
 					const data = await response.json();
 					console.log({empty: data.empty, attempt});
-					if (data.candles) console.log(data.candles[0]);
-					else console.log(data);
+
+					if (data.candles) {
+						console.log(data.candles[0]);
+					} else {
+						console.log(data);
+					}
 
 					if (data.empty || data.error) {
 						console.log({dataError: data.error, attempt});

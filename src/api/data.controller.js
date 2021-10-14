@@ -1,9 +1,9 @@
-import {StockDataDAO} from '../dao/dataDAO';
+import {StockDataDAO, ContinuousPricesDAO} from '../dao/dataDAO';
 import {DataUpdates} from '../utils/fetchData';
 
 export default class DataController {
 	static async apiInsertData(req, res, next) {
-		const result = await StockDataDAO.insertStockHist();
+		const result = await StockDataDAO.setHistoricalPrices();
 		console.log({result});
 		// const MOVIES_PER_PAGE = 20;
 		// const { moviesList, totalNumMovies } = await MoviesDAO.getMovies();
@@ -25,7 +25,7 @@ export default class DataController {
 		ticker = ticker.toUpperCase().split(',');
 		// console.log(ticker);
 
-		const result = await StockDataDAO.getPrices({ticker});
+		const result = await StockDataDAO.getHistoricalPrices({ticker});
 
 		// console.log({result}, req.params);
 
@@ -44,7 +44,9 @@ export default class DataController {
 	}
 
 	static async apiGetLiveStockData(req, res, next) {
-		const result = DataUpdates.getLiveData();
+		// const result = DataUpdates.getLiveData();
+
+		const result = await ContinuousPricesDAO.getContinuousPrices();
 
 		// console.log({result});
 

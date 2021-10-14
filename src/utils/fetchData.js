@@ -12,7 +12,7 @@ import util from 'util';
 import {API_TO_INDICATORS} from '../assets/constants';
 import {sleep, waitTillSecond} from './timingFunctions';
 
-import {StockDataDAO} from '../dao/dataDAO';
+import {StockDataDAO, ContinuousPricesDAO} from '../dao/dataDAO';
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
@@ -52,13 +52,13 @@ export class FetchData {
 
 					// if (error !== null) {
 					data = await response.json();
-					console.log({empty: data.empty, attempt});
+					// console.log({empty: data.empty, attempt});
 
-					if (data.candles) {
-						console.log(data.candles[0]);
-					} else {
-						console.log(data);
-					}
+					// if (data.candles) {
+					// 	console.log(data.candles[0]);
+					// } else {
+					// 	console.log(data);
+					// }
 
 					if (data.empty || data.error) {
 						console.log({dataError: data.error, attempt});
@@ -678,7 +678,7 @@ export class DataUpdates {
 				);
 				// console.log(data);
 
-				const insertStatus = await StockDataDAO.insertStockHist(data);
+				const insertStatus = await StockDataDAO.setHistoricalPrices(data);
 				// console.log(insertStatus);
 			} catch (e) {
 				console.error(`Error while fetching data and inserting into DB for ${e}`);
@@ -695,6 +695,7 @@ export class DataUpdates {
 
 			const data = await ProcessContinuousData.batchFetch(symbols);
 			// console.log(data.AAPL.bidPrice, 'AAPL bid');
+			// console.log({data});
 
 			if (data.error) {
 				console.log('error during fetching', data.error);
@@ -728,6 +729,11 @@ export class DataUpdates {
 		if (timerId) {
 			return;
 		} else {
+			const contData = await ContinuousPricesDAO.getContinuousPrices();
+			console.log({contData});
+
+			await this.updateContinuousData();
+
 			lastHistoricalUpdate = new Date().getDate();
 			dailyHistoryUpdate = await this.updateHistory(1, 'month');
 
@@ -797,17 +803,23 @@ export class ProcessContinuousData {
 				symbolList.slice(startIndex, endIndex)
 			);
 			let filteredData = this.filterData(partialData);
+
+			// insert into DB
+			const res = await ContinuousPricesDAO.setContinuousPrices(filteredData);
+			// console.log({res});
+
 			// console.log(filteredData);
 			data = {...data, ...filteredData};
-			// console.log(data);
+			// console.log({data});
 			startIndex = endIndex;
 			endIndex += symbolsPerSplit;
 			endIndex = Math.min(endIndex, symbolList.length);
-			// sleep after a batch except the final one
-			if (i !== splits - 1) {
-				// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
-				await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
-			}
+
+			// // sleep after a batch except the final one
+			// if (i !== splits - 1) {
+			// 	// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
+			// 	await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+			// }
 		}
 		// console.log(data.AAPL.bidPrice, 'AAPL bid');
 		return data;

@@ -1,4 +1,4 @@
-let stocks;
+let stocks, continuousStockData;
 
 export class StockDataDAO {
 	static async injectDB(conn) {
@@ -10,11 +10,11 @@ export class StockDataDAO {
 			stocks = await conn.db('stock_data').collection('historical_prices');
 			// await stocks.remove();
 		} catch (e) {
-			console.error(`Unable to establish collection handles in dataDAO: ${e}`);
+			console.error(`Unable to establish collection handles in StockDataDAO: ${e}`);
 		}
 	}
 
-	static async getPrices({
+	static async getHistoricalPrices({
 		// here's where the default parameters are set for the getMovies method
 		ticker = ['AAPL'],
 		filters = null,
@@ -60,7 +60,7 @@ export class StockDataDAO {
 		}
 	}
 
-	static async insertStockHist(data) {
+	static async setHistoricalPrices(data) {
 		// var myDate = new Date('10/16/1995Z');
 
 		const {candles, symbol, empty} = data;
@@ -120,6 +120,75 @@ export class StockDataDAO {
 			return {success: true};
 		} catch (e) {
 			console.error(`Error occurred while updating stock, ${e}`, {data});
+			return {error: e};
+		}
+	}
+}
+
+export class ContinuousPricesDAO {
+	static async injectDB(conn) {
+		if (continuousStockData) {
+			return;
+		}
+		try {
+			continuousStockData = await conn.db('stock_data').collection('continuous_prices');
+			// await continuousStockData.remove();
+		} catch (e) {
+			console.error(
+				`Unable to establish collection handles in ContinuousPricesDAO: ${e}`
+			);
+		}
+	}
+	static async getContinuousPrices() {
+		let cursor;
+
+		try {
+			cursor = await continuousStockData.find();
+
+			// console.log(cursor.toArray());
+			// .project(project)
+			// .sort(sort);
+		} catch (e) {
+			console.error(`Unable to issue find command, ${e}`);
+			return {pricesList: [], totalNumPrices: 0};
+		}
+
+		try {
+			const pricesList = await cursor.toArray();
+			const totalNumPrices = await continuousStockData.countDocuments();
+			return {pricesList, totalNumPrices};
+		} catch (e) {
+			console.error(
+				`Unable to convert cursor to array or problem counting documents, ${e}`
+			);
+			return {pricesList: [], totalNumPrices: 0};
+		}
+	}
+
+	static async setContinuousPrices(data) {
+		// var myDate = new Date('10/16/1995Z');
+
+		const stockSymbols = Object.keys(data);
+
+		if (!stockSymbols.length) return;
+
+		try {
+			const stocksToInsert = stockSymbols.map(stockName => ({
+				updateOne: {
+					filter: {ticker: stockName},
+					update: {
+						$set: data[stockName],
+					},
+					upsert: true,
+				},
+			}));
+
+			const {nUpserted, nModified} = await continuousStockData.bulkWrite(stocksToInsert);
+			console.log({nUpserted, nModified, stockNumber: stockSymbols.length});
+
+			return {success: true};
+		} catch (e) {
+			console.error(`Error occurred while updating continuous stocks, ${e}`);
 			return {error: e};
 		}
 	}

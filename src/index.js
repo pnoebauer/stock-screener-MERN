@@ -3,7 +3,7 @@ import {MongoClient} from 'mongodb';
 
 require('dotenv').config();
 
-import {StockDataDAO} from './dao/dataDAO';
+import {ContinuousPricesDAO, StockDataDAO} from './dao/dataDAO';
 import {DataUpdates} from './utils/fetchData';
 
 const port = process.env.PORT || 8000;
@@ -24,6 +24,7 @@ MongoClient.connect(process.env.MONGODB_URI, {
 		// console.log(client);
 
 		await StockDataDAO.injectDB(client);
+		await ContinuousPricesDAO.injectDB(client);
 
 		const server = app.listen(port, () => {
 			console.log(`listening on port ${port}`);

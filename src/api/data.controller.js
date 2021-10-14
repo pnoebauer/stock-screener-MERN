@@ -1,5 +1,5 @@
-import {StockDataDAO, ContinuousPricesDAO} from '../dao/dataDAO';
-import {DataUpdates} from '../utils/fetchData';
+import {StockDataDAO, ContinuousPricesDAO} from '../dao/price-data-DAO';
+import {DataUpdates} from '../utils/data-updater';
 
 export default class DataController {
 	static async apiInsertData(req, res, next) {

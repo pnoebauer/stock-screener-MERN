@@ -14,6 +14,59 @@ export class StockDataDAO {
 		}
 	}
 
+	// pipeline = [
+	// 	{
+	// 		$match: {
+	// 			timeStamp: {$gt: ISODate(startDate)},
+	// 		}
+	// 	},
+	// 	{
+	// 		$group: {
+	// 			_id: {$week: '$timeStamp'},
+	// 			documentCount: {$sum: 1}
+	// 		}
+	// 	}
+	// ];
+	// db.mycollection.aggregate(pipeline)
+
+	static async getSampledHistoricalPrices({
+		// here's where the default parameters are set for the getMovies method
+		ticker = 'AAPL',
+		filters = null,
+		interval = '$month', //$dayOfMonth, $week, $month, $year
+	} = {}) {
+		try {
+			const pipeline = [
+				{
+					$match: {ticker},
+				},
+				{
+					$group: {
+						_id: {[interval]: '$datetime'},
+						documentCount: {$sum: 1},
+						volume: {$sum: '$volume'},
+						high: {$max: '$high'},
+						low: {$min: '$low'},
+						open: {$first: '$open'},
+						close: {$last: '$close'},
+					},
+				},
+			];
+
+			// console.log(pipeline[1]['$group']);
+
+			const aggregateResult = await stocks.aggregate(pipeline);
+
+			const stocksHistoryArr = await aggregateResult.toArray();
+			console.log({stocksHistoryArr});
+
+			return stocksHistoryArr;
+		} catch (e) {
+			console.error(`Unable to retrieve sampled stock history for ${ticker}: ${e}`);
+			return {error: e};
+		}
+	}
+
 	static async getHistoricalPrices({
 		// here's where the default parameters are set for the getMovies method
 		ticker = ['AAPL'],
@@ -24,9 +77,9 @@ export class StockDataDAO {
 		let cursor;
 
 		try {
-			// cursor = await stocks.find();
 			// cursor = await stocks.find({ticker});
-			cursor = await stocks.find({ticker: {$in: ticker}});
+			// cursor = await stocks.find({ticker: {$in: ticker}});
+			cursor = await stocks.find({ticker: {$in: ticker}}, {_id: 0});
 
 			// console.log(cursor.toArray());
 			// .project(project)

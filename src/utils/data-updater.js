@@ -10,9 +10,9 @@ const fetch = retryFetch(originalFetch);
 import util from 'util';
 
 import {API_TO_INDICATORS} from '../assets/constants';
-import {sleep, waitTillSecond} from './timingFunctions';
+import {sleep, waitTillSecond} from './timing';
 
-import {StockDataDAO, ContinuousPricesDAO} from '../dao/dataDAO';
+import {StockDataDAO, ContinuousPricesDAO} from '../dao/price-data-DAO';
 
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
@@ -730,7 +730,7 @@ export class DataUpdates {
 			return;
 		} else {
 			const contData = await ContinuousPricesDAO.getContinuousPrices();
-			console.log({contData});
+			// console.log({contData});
 
 			await this.updateContinuousData();
 

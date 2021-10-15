@@ -3,12 +3,26 @@ import {DataUpdates} from '../utils/data-updater';
 
 export default class ChartDataController {
 	static async apiGetSampledStockData(req, res, next) {
-		let {ticker} = req.params;
-		// console.log(req.params);
-		ticker = ticker.toUpperCase().split(',');
-		// console.log(ticker);
+		const queryObject = req.body;
 
-		const result = await StockDataDAO.getSampledHistoricalPrices({ticker});
+		console.log({queryObject});
+
+		const intervalMap = {
+			day: '$dayOfMonth',
+			week: '$week',
+			month: '$month',
+			year: '$year',
+		};
+
+		const {symbol, lookBack, samplePeriod, endDate} = queryObject;
+
+		// const result = await StockDataDAO.getSampledHistoricalPrices({ticker});
+		const result = await StockDataDAO.getSampledHistoricalPrices({
+			ticker: symbol,
+			endDate: new Date(endDate),
+			interval: intervalMap[samplePeriod],
+			lookBack,
+		});
 
 		// console.log({result}, req.params);
 

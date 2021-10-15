@@ -34,11 +34,15 @@ export class StockDataDAO {
 		ticker = 'AAPL',
 		filters = null,
 		interval = '$month', //$dayOfMonth, $week, $month, $year
+		// endDate = new Date('2021-11-01'),
+		endDate = new Date(),
+		lookBack = 200,
 	} = {}) {
 		try {
 			const pipeline = [
 				{
-					$match: {ticker},
+					$match: {ticker, datetime: {$lte: endDate}},
+					// $match: {ticker},
 				},
 				{
 					$group: {
@@ -49,8 +53,11 @@ export class StockDataDAO {
 						low: {$min: '$low'},
 						open: {$first: '$open'},
 						close: {$last: '$close'},
+						datetime: {$max: '$datetime'},
 					},
 				},
+				{$sort: {datetime: 1}},
+				{$limit: lookBack},
 			];
 
 			// console.log(pipeline[1]['$group']);

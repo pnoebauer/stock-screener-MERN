@@ -7,7 +7,8 @@ const router = new Router();
 // router.route('/AAPL').get(DataCtrl.apiInsertData);
 
 router.route('/latest').get(DataCtrl.apiGetLiveStockData);
+// router.route('/historical').get(DataCtrl.apiGetLiveStockData);
 
-router.route('/historical/:ticker').get(DataCtrl.apiGetStockData);
+router.route('/lastest/:ticker').get(DataCtrl.apiGetStockData);
 
 export default router;

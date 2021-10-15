@@ -17,8 +17,8 @@ app.use(express.urlencoded({extended: true}));
 
 // app.use('/api/v1/user', data);
 // app.use('/events/:id', data);
-// app.use('/api/v1/prices', data);
 
+// app.use('/api/v1/prices', data);
 app.use('/api/v1/chart', chartData);
 
 const port = process.env.PORT || 8000;

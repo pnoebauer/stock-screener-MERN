@@ -14,30 +14,24 @@ export class StockDataDAO {
 		}
 	}
 
-	// pipeline = [
-	// 	{
-	// 		$match: {
-	// 			timeStamp: {$gt: ISODate(startDate)},
-	// 		}
-	// 	},
-	// 	{
-	// 		$group: {
-	// 			_id: {$week: '$timeStamp'},
-	// 			documentCount: {$sum: 1}
-	// 		}
-	// 	}
-	// ];
-	// db.mycollection.aggregate(pipeline)
-
 	static async getSampledHistoricalPrices({
 		// here's where the default parameters are set for the getMovies method
 		ticker = 'AAPL',
-		filters = null,
 		interval = '$month', //$dayOfMonth, $week, $month, $year
 		// endDate = new Date('2021-11-01'),
 		endDate = new Date(),
 		lookBack = 200,
+		projection,
 	} = {}) {
+		let projectionObject = {_id: 1};
+
+		if (projection) {
+			// ['openPrice', 'highPrice', 'lowPrice', 'closePrice']
+			projection.forEach(
+				parameter => (projectionObject[parameter.replace('Price', '')] = 1)
+			);
+		}
+
 		try {
 			const pipeline = [
 				{
@@ -60,7 +54,9 @@ export class StockDataDAO {
 				{$limit: lookBack},
 			];
 
-			// console.log(pipeline[1]['$group']);
+			if (projection) {
+				pipeline.push({$project: projectionObject});
+			}
 
 			const aggregateResult = await stocks.aggregate(pipeline);
 
@@ -71,6 +67,49 @@ export class StockDataDAO {
 		} catch (e) {
 			console.error(`Unable to retrieve sampled stock history for ${ticker}: ${e}`);
 			return {error: e};
+		}
+	}
+
+	static async retrieveSymbolWithIndicators(queryObject) {
+		try {
+			// console.log(queryObject);
+
+			// determine the maximum lookback and all unique parameters (for data retrieval from the db)
+			const queryParameters = new Set();
+			let maxLookBack = 1;
+			Object.keys(queryObject.indicators).forEach(indicator => {
+				const {[indicator]: indObj} = queryObject.indicators; // destructure out the indicator
+				// console.log(indObj, indicator);
+
+				if (!indObj.parameter) {
+					['openPrice', 'highPrice', 'lowPrice', 'closePrice'].forEach(parameter =>
+						queryParameters.add(parameter)
+					);
+				} else {
+					queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+				}
+
+				maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
+			});
+
+			// console.log(queryParameters, maxLookBack);
+
+			// retrieve data
+			const latestPriceData = await this.getSampledHistoricalPrices({
+				ticker: queryObject.symbol,
+				lookBack: UNSTABLEPERIOD + maxLookBack,
+				projection: Array.from(queryParameters),
+				interval: queryObject.interval,
+			});
+
+			// console.log(latestPriceData, 'latestPriceData');
+
+			const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
+
+			return lastCandle;
+		} catch (e) {
+			console.log('error retrieving symbol with indicators', e);
+			return {};
 		}
 	}
 

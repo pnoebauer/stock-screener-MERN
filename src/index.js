@@ -32,7 +32,12 @@ MongoClient.connect(process.env.MONGODB_URI, {
 
 		// await DataUpdates.triggerUpdates();
 
-		await StockDataDAO.getSampledHistoricalPrices();
+		// await StockDataDAO.getSampledHistoricalPrices();
+		await StockDataDAO.getSampledHistoricalPrices({
+			ticker: 'AAPL',
+			lookBack: 5,
+			projection: ['openPrice', 'closePrice'],
+		});
 
 		// etimeout
 		// https://stackoverflow.com/questions/23632914/how-to-handle-etimedout-error#:~:text=This%20is%20caused%20when%20your,t%20be%20thrown%20anymore%3A%20out.

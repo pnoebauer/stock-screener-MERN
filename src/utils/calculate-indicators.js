@@ -1,3 +1,5 @@
+import regression from 'regression';
+
 // const sma = (dataRaw, timePeriod, parameter) => {
 // 	const sma =
 // 		dataRaw.reduce((accumulator, currentCandle, currentIndex) => {
@@ -19,7 +21,7 @@
 //      y=yesterday
 //      N=number of days in EMA
 //      k=2÷(N+1)
-const ema = (dataRaw, time_period, parameter) => {
+export const ema = (dataRaw, time_period, parameter) => {
 	const k = 2 / (time_period + 1);
 
 	const currentCandle = dataRaw[dataRaw.length - 1];
@@ -39,7 +41,7 @@ const ema = (dataRaw, time_period, parameter) => {
 //      y=yesterday
 //      N=number of days in SMA
 //      k=1÷N
-const sma = (dataRaw, timePeriod, parameter) => {
+export const sma = (dataRaw, timePeriod, parameter) => {
 	try {
 		// console.log(timePeriod, dataRaw.length);
 		const k = 1 / timePeriod;
@@ -59,7 +61,7 @@ const sma = (dataRaw, timePeriod, parameter) => {
 		// SMA=Price(t)×k-Price(t-N)×k+SMA(y)
 		const sma = (parameterValue - nBarsAgoPV) * k + priorSma;
 
-		// console.log(parameterValue, nBarsAgoPV, k, priorSma, sma);
+		// console.log({currentCandle, parameter, parameterValue, nBarsAgoPV, k, priorSma, sma});
 
 		return sma;
 	} catch (e) {
@@ -91,7 +93,7 @@ const calculateTR = (candle, priorCandle) => {
 	return tr;
 };
 
-const atr = (dataRaw, timePeriod, parameter, maxLookBack) => {
+export const atr = (dataRaw, timePeriod, parameter, maxLookBack) => {
 	// console.log(timePeriod, dataRaw.length, maxLookBack);
 
 	const currentCandle = dataRaw[dataRaw.length - 1];
@@ -117,9 +119,9 @@ const atr = (dataRaw, timePeriod, parameter, maxLookBack) => {
 // const gradient = result.equation[0];
 // const yIntercept = result.equation[1];
 
-const regression = require('regression');
+// const regression = require('regression');
 
-const reg = (dataRaw, timePeriod, parameter) => {
+export const reg = (dataRaw, timePeriod, parameter) => {
 	// const currentCandle = dataRaw[dataRaw.length - 1];
 	// const startCandle = dataRaw[dataRaw.length - timePeriod];
 
@@ -157,7 +159,7 @@ const reg = (dataRaw, timePeriod, parameter) => {
 	}
 };
 
-const mom = (dataRaw, timePeriod, parameter) => {
+export const mom = (dataRaw, timePeriod, parameter) => {
 	try {
 		const currentCandle = dataRaw[dataRaw.length - 1];
 		const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] || 0;
@@ -175,4 +177,4 @@ const mom = (dataRaw, timePeriod, parameter) => {
 	}
 };
 
-module.exports = {sma, ema, atr, reg, mom};
+// module.exports = {sma, ema, atr, reg, mom};

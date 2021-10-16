@@ -14,6 +14,8 @@ import {sleep, waitTillSecond} from './timing';
 
 import {StockDataDAO, ContinuousPricesDAO} from '../dao/price-data-DAO';
 
+import DataStreamCtrl from '../api/events.controller';
+
 if (process.env.NODE_ENV !== 'production') require('dotenv').config(); //load .env into process environment (adds variables from there)
 
 const urlEndPoint = 'https://api.tdameritrade.com/v1/marketdata';
@@ -41,7 +43,7 @@ export class FetchData {
 				// retries: 3,
 				retryDelay: 10000,
 				retryOn: async function (attempt, error, response) {
-					console.log({attempt});
+					// console.log({attempt});
 
 					if (attempt > 5) return false;
 
@@ -666,7 +668,7 @@ export class DataUpdates {
 		for (let i = 0; i < symbols.length; i++) {
 			const symbol = symbols[i];
 
-			console.log({symbol, i});
+			// console.log({symbol, i});
 
 			try {
 				const data = await FetchData.fetchHistoricalData(
@@ -708,12 +710,13 @@ export class DataUpdates {
 			cachedData = data;
 
 			// if the data has changed since the last fetch send it to all clients
-			if (!identical) {
-				// console.log(cachedData.AAPL, new Date().getSeconds());
-				await waitTillSecond(0);
-				console.log('sending', new Date().getSeconds());
-				// sendEventsToAll(data);
-			}
+			// if (!identical) {
+			// console.log(cachedData.AAPL, new Date().getSeconds());
+			await waitTillSecond(0);
+			console.log('sending --------', new Date().getSeconds());
+
+			DataStreamCtrl.sendEventsToAll(data);
+			// }
 		} catch (e) {
 			console.error(`Error updating continuous data for ${e}`);
 			return {error: e};
@@ -729,8 +732,9 @@ export class DataUpdates {
 		if (timerId) {
 			return;
 		} else {
-			const contData = await ContinuousPricesDAO.getContinuousPrices();
-			// console.log({contData});
+			const continuousData = await ContinuousPricesDAO.getContinuousPrices();
+			// console.log(continuousData.priceData);
+			cachedData = continuousData.priceData;
 
 			await this.updateContinuousData();
 

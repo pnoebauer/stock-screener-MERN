@@ -30,14 +30,42 @@ MongoClient.connect(process.env.MONGODB_URI, {
 		});
 		server.keepAliveTimeout = 61 * 1000;
 
-		// await DataUpdates.triggerUpdates();
+		await DataUpdates.triggerUpdates();
 
 		// await StockDataDAO.getSampledHistoricalPrices();
-		await StockDataDAO.getSampledHistoricalPrices({
-			ticker: 'AAPL',
-			lookBack: 5,
-			projection: ['openPrice', 'closePrice'],
-		});
+		// await StockDataDAO.getSampledHistoricalPrices({
+		// 	ticker: 'AAPL',
+		// 	lookBack: 5,
+		// 	projection: ['open', 'close'],
+		// });
+
+		const queryObject = {
+			symbol: 'AAPL',
+			interval: 'day',
+			indicators: {
+				sma: {
+					parameter: 'close',
+					lookBack: 5,
+				},
+				ema: {
+					parameter: 'open',
+					lookBack: 10,
+				},
+				// atr: {
+				// 	lookBack: 5,
+				// },
+				// reg: {
+				// 	parameter: 'close',
+				// 	lookBack: 250,
+				// },
+				// mom: {
+				// 	parameter: 'close',
+				// 	lookBack: 250,
+				// },
+			},
+		};
+
+		// await StockDataDAO.getSymbolWithIndicators(queryObject);
 
 		// etimeout
 		// https://stackoverflow.com/questions/23632914/how-to-handle-etimedout-error#:~:text=This%20is%20caused%20when%20your,t%20be%20thrown%20anymore%3A%20out.

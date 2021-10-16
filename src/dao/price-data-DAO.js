@@ -1,4 +1,9 @@
+import {UNSTABLEPERIOD} from '../assets/constants';
+import * as calculateIndicators from '../utils/calculate-indicators';
+
 let stocks, continuousStockData;
+
+const serialIndicators = ['reg', 'mom'];
 
 export class StockDataDAO {
 	static async injectDB(conn) {
@@ -28,7 +33,8 @@ export class StockDataDAO {
 		if (projection) {
 			// ['openPrice', 'highPrice', 'lowPrice', 'closePrice']
 			projection.forEach(
-				parameter => (projectionObject[parameter.replace('Price', '')] = 1)
+				// parameter => (projectionObject[parameter.replace('Price', '')] = 1)
+				parameter => (projectionObject[parameter] = 1)
 			);
 		}
 
@@ -61,7 +67,7 @@ export class StockDataDAO {
 			const aggregateResult = await stocks.aggregate(pipeline);
 
 			const stocksHistoryArr = await aggregateResult.toArray();
-			console.log({stocksHistoryArr});
+			// console.log({stocksHistoryArr});
 
 			return stocksHistoryArr;
 		} catch (e) {
@@ -70,7 +76,77 @@ export class StockDataDAO {
 		}
 	}
 
-	static async retrieveSymbolWithIndicators(queryObject) {
+	static async getLatestIndicators(queryObject, data, maxLookBack) {
+		let currentDataSeries = [];
+
+		// used to store the end result
+		let latestIndicators = {};
+
+		// indicators that do not require the whole series
+		const reqDiscreteIndicators = Object.keys(queryObject.indicators).filter(
+			indicator => !serialIndicators.includes(indicator)
+		);
+		const reqSerialIndicators = Object.keys(queryObject.indicators).filter(indicator =>
+			serialIndicators.includes(indicator)
+		);
+
+		data.forEach((candle, index) => {
+			// console.log(candle, 'candle', currentDataSeries, index);
+			// push the candle into the currentDataSeries array (due to pushing (pass by ref), if the candle is mutated later on it will also updated in the series)
+			currentDataSeries.push(candle);
+			// console.log(currentDataSeries, 'currentDataSeries', index);
+
+			// loop over all requested indicators
+			// Object.keys(reqDiscreteIndicators).forEach(indicator => {
+			for (const indicator of reqDiscreteIndicators) {
+				// get the requested lookback and parameter from the queryObject
+				let {parameter, lookBack} = queryObject.indicators[indicator];
+				lookBack = Number(lookBack);
+
+				// console.log(index, maxLookBack, lookBack, indicator);
+
+				// start the calculation once the index is within the lookback (+UNSTABLEPERIOD) of the current bar
+				if (index >= maxLookBack - lookBack) {
+					// console.log(indicator, maxLookBack, maxLookBack + UNSTABLEPERIOD - 1, index);
+					// at the calculated indicator to the candle object (will also update in the currentDataSeries array due to pass by ref)
+					candle[indicator] = calculateIndicators[indicator](
+						currentDataSeries,
+						lookBack,
+						parameter,
+						maxLookBack
+					);
+					// round the final result
+					if (index === data.length - 1) {
+						// candle[indicator] = candle[indicator]
+						// round to two decimals
+						candle[indicator] = Math.round(candle[indicator] * 100) / 100;
+						// console.log(candle, 'last candle');
+						latestIndicators[indicator] = candle[indicator];
+					}
+				}
+				// });
+			}
+			// console.log(candle, index);
+		});
+
+		for (const indicator of reqSerialIndicators) {
+			let {parameter, lookBack} = queryObject.indicators[indicator];
+			lookBack = Number(lookBack);
+
+			// latestIndicators[indicator] = calculateIndicators[indicator](
+			// 	data,
+			// 	lookBack,
+			// 	parameter
+			// )
+			// round to two decimals
+			latestIndicators[indicator] =
+				Math.round(calculateIndicators[indicator](data, lookBack, parameter) * 100) / 100;
+		}
+
+		return latestIndicators;
+	}
+
+	static async getSymbolWithIndicators(queryObject) {
 		try {
 			// console.log(queryObject);
 
@@ -82,7 +158,7 @@ export class StockDataDAO {
 				// console.log(indObj, indicator);
 
 				if (!indObj.parameter) {
-					['openPrice', 'highPrice', 'lowPrice', 'closePrice'].forEach(parameter =>
+					['open', 'high', 'low', 'close'].forEach(parameter =>
 						queryParameters.add(parameter)
 					);
 				} else {
@@ -102,9 +178,15 @@ export class StockDataDAO {
 				interval: queryObject.interval,
 			});
 
-			// console.log(latestPriceData, 'latestPriceData');
+			// console.log(latestPriceData.length, 'latestPriceData');
 
-			const lastCandle = getLatestIndicators(queryObject, latestPriceData, maxLookBack);
+			const lastCandle = this.getLatestIndicators(
+				queryObject,
+				latestPriceData,
+				maxLookBack
+			);
+
+			// console.log(lastCandle, 'lastCandle');
 
 			return lastCandle;
 		} catch (e) {
@@ -184,7 +266,7 @@ export class StockDataDAO {
 			}));
 
 			const {nUpserted, nModified} = await stocks.bulkWrite(candlesToInsert);
-			console.log({nUpserted, nModified, length: candles.length});
+			// console.log({nUpserted, nModified, length: candles.length});
 
 			// const res = await stocks.bulkWrite(candlesToInsert);
 			// console.log({res});
@@ -240,27 +322,38 @@ export class ContinuousPricesDAO {
 	}
 	static async getContinuousPrices() {
 		let cursor;
+		let priceData = {};
 
 		try {
-			cursor = await continuousStockData.find();
+			cursor = await continuousStockData.find({}, {projection: {_id: 0}});
 
 			// console.log(cursor.toArray());
 			// .project(project)
 			// .sort(sort);
 		} catch (e) {
 			console.error(`Unable to issue find command, ${e}`);
-			return {pricesList: [], totalNumPrices: 0};
+			return {priceData, totalNumPrices: 0};
 		}
 
 		try {
 			const pricesList = await cursor.toArray();
+
+			// console.log(pricesList[0]);
 			const totalNumPrices = await continuousStockData.countDocuments();
-			return {pricesList, totalNumPrices};
+
+			for (let i = 0; i < pricesList.length; i++) {
+				const stockObject = pricesList[i];
+				const {ticker, ...rest} = stockObject;
+
+				priceData[ticker] = {...rest};
+			}
+
+			return {priceData, totalNumPrices};
 		} catch (e) {
 			console.error(
 				`Unable to convert cursor to array or problem counting documents, ${e}`
 			);
-			return {pricesList: [], totalNumPrices: 0};
+			return {priceData, totalNumPrices: 0};
 		}
 	}
 
@@ -283,7 +376,7 @@ export class ContinuousPricesDAO {
 			}));
 
 			const {nUpserted, nModified} = await continuousStockData.bulkWrite(stocksToInsert);
-			console.log({nUpserted, nModified, stockNumber: stockSymbols.length});
+			// console.log({nUpserted, nModified, stockNumber: stockSymbols.length});
 
 			return {success: true};
 		} catch (e) {

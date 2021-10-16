@@ -43,6 +43,15 @@ export default class DataController {
 		res.json(result);
 	}
 
+	static async apiGetLatestDataWithIndicators(req, res, next) {
+		const queryObject = req.body;
+		// console.log({queryObject});
+
+		const result = await StockDataDAO.getSymbolWithIndicators(queryObject);
+
+		res.json(result);
+	}
+
 	static async apiGetLiveStockData(req, res, next) {
 		// const result = DataUpdates.getLiveData();
 

@@ -158,11 +158,11 @@ let cachedData = {};
 
 export class DataUpdates {
 	static async updateHistory(multiplier, interval) {
-		console.log('updating history');
+		// console.log('updating history');
 		for (let i = 0; i < SYMBOLS.length; i++) {
 			const symbol = SYMBOLS[i];
 
-			// console.log({symbol, i});
+			console.log({symbol, i}, 'history');
 
 			try {
 				const data = await FetchData.fetchHistoricalData(
@@ -297,7 +297,7 @@ export class ProcessContinuousData {
 		let data = {};
 		// split fetch call into 5 equal parts
 		for (let i = 0; i < splits; i++) {
-			console.log('batch', i);
+			console.log('continuous batch', i);
 			let partialData = await FetchData.fetchLiveData(
 				symbolList.slice(startIndex, endIndex)
 			);
@@ -314,11 +314,11 @@ export class ProcessContinuousData {
 			endIndex += symbolsPerSplit;
 			endIndex = Math.min(endIndex, symbolList.length);
 
-			// // sleep after a batch except the final one
-			// if (i !== splits - 1) {
-			// 	// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
-			// 	await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
-			// }
+			// sleep after a batch except the final one
+			if (i !== splits - 1) {
+				// console.log('waiting', Math.round(interValTime / (splits + 2)), 'ms');
+				await sleep(interValTime / (splits + 2)); //make sure that all fetches are done before the next round
+			}
 		}
 		// console.log(data.AAPL.bidPrice, 'AAPL bid');
 		return data;

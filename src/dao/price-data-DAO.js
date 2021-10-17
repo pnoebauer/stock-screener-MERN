@@ -208,7 +208,7 @@ export class StockDataDAO {
 				interval: queryObject.interval,
 			});
 
-			console.log(latestPriceData.length, 'latestPriceData');
+			// console.log(latestPriceData.length, 'latestPriceData');
 
 			const lastCandle = this.getLatestIndicators(
 				queryObject,
@@ -216,7 +216,7 @@ export class StockDataDAO {
 				maxLookBack
 			);
 
-			console.log(lastCandle, 'lastCandle');
+			// console.log(lastCandle, 'lastCandle');
 
 			return lastCandle;
 		} catch (e) {

@@ -4,7 +4,7 @@ import {DataUpdates} from '../utils/data-updater';
 export default class DataController {
 	static async apiInsertData(req, res, next) {
 		const result = await StockDataDAO.setHistoricalPrices();
-		console.log({result});
+		// console.log({result});
 		// const MOVIES_PER_PAGE = 20;
 		// const { moviesList, totalNumMovies } = await MoviesDAO.getMovies();
 		// let response = {
@@ -47,7 +47,7 @@ export default class DataController {
 		const queryObject = req.body;
 
 		const result = await StockDataDAO.getSymbolWithIndicators(queryObject);
-		console.log('scanner endpoint', queryObject.indicators.sma);
+		// console.log('scanner endpoint');
 
 		res.json(result);
 	}

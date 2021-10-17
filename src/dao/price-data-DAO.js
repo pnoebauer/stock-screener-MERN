@@ -22,13 +22,13 @@ export class StockDataDAO {
 	static async getSampledHistoricalPrices({
 		// here's where the default parameters are set for the getMovies method
 		ticker = 'AAPL',
-		interval = '$month', //$dayOfMonth, $week, $month, $year
+		interval = 'month', //$dayOfMonth, $week, $month, $year
 		// endDate = new Date('2021-11-01'),
 		endDate = new Date(),
 		lookBack = 200,
 		projection,
 	} = {}) {
-		let projectionObject = {_id: 1};
+		let projectionObject = {_id: 0};
 
 		if (projection) {
 			// ['openPrice', 'highPrice', 'lowPrice', 'closePrice']
@@ -38,36 +38,61 @@ export class StockDataDAO {
 			);
 		}
 
+		let samplingQuery;
+
+		switch (interval) {
+			case 'day':
+				samplingQuery = {
+					day: {$dayOfMonth: '$datetime'},
+					month: {$month: '$datetime'},
+					year: {$year: '$datetime'},
+				};
+				break;
+			case 'week':
+				samplingQuery = {
+					week: {$week: '$datetime'},
+					month: {$month: '$datetime'},
+					year: {$year: '$datetime'},
+				};
+				break;
+			case 'month':
+				samplingQuery = {
+					month: {$month: '$datetime'},
+					year: {$year: '$datetime'},
+				};
+				break;
+			case 'year':
+				samplingQuery = {
+					year: {$year: '$datetime'},
+				};
+				break;
+		}
+
 		try {
 			const pipeline = [
 				{
 					$match: {ticker, datetime: {$lte: endDate}},
-					// $match: {ticker},
 				},
 				{
 					$group: {
-						_id: {[interval]: '$datetime'},
-						documentCount: {$sum: 1},
+						_id: samplingQuery,
 						volume: {$sum: '$volume'},
 						high: {$max: '$high'},
 						low: {$min: '$low'},
 						open: {$first: '$open'},
 						close: {$last: '$close'},
-						datetime: {$max: '$datetime'},
+						date: {$max: '$datetime'},
 					},
 				},
-				{$sort: {datetime: 1}},
+				{$sort: {date: 1}},
 				{$limit: lookBack},
+				{$project: projectionObject},
 			];
-
-			if (projection) {
-				pipeline.push({$project: projectionObject});
-			}
 
 			const aggregateResult = await stocks.aggregate(pipeline);
 
 			const stocksHistoryArr = await aggregateResult.toArray();
-			// console.log({stocksHistoryArr});
+			// console.log({stocksHistoryArr}, stocksHistoryArr.length);
 
 			return stocksHistoryArr;
 		} catch (e) {
@@ -101,6 +126,8 @@ export class StockDataDAO {
 			for (const indicator of reqDiscreteIndicators) {
 				// get the requested lookback and parameter from the queryObject
 				let {parameter, lookBack} = queryObject.indicators[indicator];
+				parameter = parameter.replace('Price', '');
+
 				lookBack = Number(lookBack);
 
 				// console.log(index, maxLookBack, lookBack, indicator);
@@ -131,6 +158,8 @@ export class StockDataDAO {
 
 		for (const indicator of reqSerialIndicators) {
 			let {parameter, lookBack} = queryObject.indicators[indicator];
+			parameter = parameter.replace('Price', '');
+
 			lookBack = Number(lookBack);
 
 			// latestIndicators[indicator] = calculateIndicators[indicator](
@@ -162,13 +191,14 @@ export class StockDataDAO {
 						queryParameters.add(parameter)
 					);
 				} else {
-					queryParameters.add(indObj.parameter); // add the parameter to the set (i.e. OHLC)
+					const parameter = indObj.parameter.replace('Price', '');
+					queryParameters.add(parameter); // add the parameter to the set (i.e. OHLC)
 				}
 
 				maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
 			});
 
-			// console.log(queryParameters, maxLookBack);
+			// console.log({queryParameters, maxLookBack});
 
 			// retrieve data
 			const latestPriceData = await this.getSampledHistoricalPrices({
@@ -178,7 +208,7 @@ export class StockDataDAO {
 				interval: queryObject.interval,
 			});
 
-			// console.log(latestPriceData.length, 'latestPriceData');
+			console.log(latestPriceData.length, 'latestPriceData');
 
 			const lastCandle = this.getLatestIndicators(
 				queryObject,
@@ -186,7 +216,7 @@ export class StockDataDAO {
 				maxLookBack
 			);
 
-			// console.log(lastCandle, 'lastCandle');
+			console.log(lastCandle, 'lastCandle');
 
 			return lastCandle;
 		} catch (e) {

@@ -44,8 +44,8 @@ MongoClient.connect(process.env.MONGODB_URI, {
 			interval: 'day',
 			indicators: {
 				sma: {
-					parameter: 'close',
-					lookBack: 5,
+					parameter: 'closePrice',
+					lookBack: 20,
 				},
 				ema: {
 					parameter: 'open',

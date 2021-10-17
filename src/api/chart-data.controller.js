@@ -7,22 +7,17 @@ export default class ChartDataController {
 
 		// console.log({queryObject});
 
-		const intervalMap = {
-			day: '$dayOfMonth',
-			week: '$week',
-			month: '$month',
-			year: '$year',
-		};
-
 		const {symbol, lookBack, samplePeriod, endDate} = queryObject;
 
 		// const result = await StockDataDAO.getSampledHistoricalPrices({ticker});
 		const result = await StockDataDAO.getSampledHistoricalPrices({
 			ticker: symbol,
 			endDate: new Date(endDate),
-			interval: intervalMap[samplePeriod],
+			interval: samplePeriod,
 			lookBack,
 		});
+
+		// console.log('chart endpoint', result);
 
 		res.json(result);
 	}

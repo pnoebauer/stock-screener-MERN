@@ -2,7 +2,7 @@
 Rebuild of the stockscreener-charting-app using the MERN stack (replacement of PostgreSQL database with MongoDB).
 You will require a MongoDB database. It is recommended to use MongoDB's cloud database MongoDB Atlas.
 Instructions on how to setup and connect to MongoDB Atlas can be found here: (https://medium.com/@sergio13prez/connecting-to-mongodb-atlas-d1381f184369).
-You also require a TD Ameritrade developer account. Instructions on how to create one and get the API key can be found in my [article](https://medium.com/@sergio13prez/connecting-to-mongodb-atlas-d1381f184369).
+You also require a TD Ameritrade developer account. Instructions on how to create one and get the API key can be found in my [article](https://medium.com/@philip.noebauer/free-stock-options-data-for-node-js-using-the-td-ameritrade-api-7ea1ec42e271).
 
 ## **Deploying locally**
 In your .env file setup:

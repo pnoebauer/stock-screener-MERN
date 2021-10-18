@@ -1,5 +1,5 @@
 {
-	"name": "stock-screener-mern-stack",
+	"name": "stock-screener-backend-app",
 	"version": "1.0.0",
 	"engines": {
 		"node": "16.0.0",

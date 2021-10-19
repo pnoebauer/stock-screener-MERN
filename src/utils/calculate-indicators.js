@@ -169,12 +169,7 @@ export const mom = (dataRaw, timePeriod, parameter) => {
 		const mom =
 			(100 * (currentCandle[parameter] - nBarsAgoCandleValue)) / currentCandle[parameter];
 
-		console.log(
-			{parameter},
-			currentCandle[parameter],
-			nBarsAgoCandle[parameter],
-			'mom params'
-		);
+		console.log({parameter}, currentCandle[parameter], nBarsAgoCandleValue, 'mom params');
 
 		return mom;
 	} catch (e) {

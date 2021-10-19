@@ -11,6 +11,6 @@ router.route('/scanner').post(DataCtrl.apiGetLatestDataWithIndicators);
 router.route('/latest').get(DataCtrl.apiGetLiveStockData);
 // router.route('/historical').get(DataCtrl.apiGetLiveStockData);
 
-router.route('/lastest/:ticker').get(DataCtrl.apiGetStockData);
+router.route('/latest/:ticker').get(DataCtrl.apiGetStockData);
 
 export default router;

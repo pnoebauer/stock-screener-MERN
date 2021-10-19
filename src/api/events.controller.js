@@ -87,11 +87,10 @@ export default class DataStreamController {
 
 	static apiHandleEvents = (req, res, next) => {
 		const queriedSymbols = req.query.id;
+		console.log('hitting /events/symbols');
 
 		// console.log({queriedSymbols});
 
 		this.eventsHandler(req, res, queriedSymbols);
-
-		// res.json(result);
 	};
 }

@@ -6,6 +6,7 @@ export default class ChartDataController {
 		const queryObject = req.body;
 
 		// console.log({queryObject});
+		console.log('chart endpoint receiving', {queryObject});
 
 		const {symbol, lookBack, samplePeriod, endDate} = queryObject;
 
@@ -17,7 +18,7 @@ export default class ChartDataController {
 			lookBack,
 		});
 
-		// console.log('chart endpoint', result);
+		console.log('chart endpoint sending');
 
 		res.json(result);
 	}

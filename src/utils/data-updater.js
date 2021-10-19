@@ -63,7 +63,7 @@ export class FetchData {
 					// }
 
 					if (data.empty || data.error) {
-						console.log({dataError: data.error, attempt});
+						console.log({dataError: data.error, attempt}, queryString);
 						return true;
 					}
 					// }
@@ -233,8 +233,8 @@ export class DataUpdates {
 			await this.updateContinuousData();
 
 			lastHistoricalUpdate = new Date().getDate();
-			dailyHistoryUpdate = await this.updateHistory(1, 'month');
-			// dailyHistoryUpdate = await this.updateHistory(5, 'year');
+			// dailyHistoryUpdate = await this.updateHistory(1, 'month');
+			dailyHistoryUpdate = await this.updateHistory(10, 'year');
 
 			timerId = setInterval(async () => {
 				// console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);

@@ -84,8 +84,9 @@ export class StockDataDAO {
 						date: {$max: '$datetime'},
 					},
 				},
-				{$sort: {date: 1}},
+				{$sort: {date: -1}},
 				{$limit: lookBack},
+				{$sort: {date: 1}},
 				{$project: projectionObject},
 			];
 

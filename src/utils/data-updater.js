@@ -233,8 +233,8 @@ export class DataUpdates {
 			await this.updateContinuousData();
 
 			lastHistoricalUpdate = new Date().getDate();
-			// dailyHistoryUpdate = await this.updateHistory(1, 'month');
-			dailyHistoryUpdate = await this.updateHistory(10, 'year');
+			dailyHistoryUpdate = await this.updateHistory(1, 'month');
+			// dailyHistoryUpdate = await this.updateHistory(10, 'year');
 
 			timerId = setInterval(async () => {
 				// console.log('new interval at', new Date().getSeconds(), lastHistoricalUpdate);

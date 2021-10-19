@@ -199,7 +199,7 @@ export class StockDataDAO {
 				maxLookBack = Math.max(maxLookBack, indObj.lookBack); //find the max lookback to be retrieved from the db
 			});
 
-			// console.log({queryParameters, maxLookBack});
+			console.log({queryParameters, maxLookBack});
 
 			// retrieve data
 			const latestPriceData = await this.getSampledHistoricalPrices({
@@ -209,7 +209,7 @@ export class StockDataDAO {
 				interval: queryObject.interval,
 			});
 
-			// console.log(latestPriceData.length, 'latestPriceData');
+			console.log(latestPriceData.length, 'latestPriceData');
 
 			const lastCandle = this.getLatestIndicators(
 				queryObject,
@@ -217,7 +217,7 @@ export class StockDataDAO {
 				maxLookBack
 			);
 
-			// console.log(lastCandle, 'lastCandle');
+			console.log(lastCandle, 'lastCandle');
 
 			return lastCandle;
 		} catch (e) {

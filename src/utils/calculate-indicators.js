@@ -162,7 +162,7 @@ export const reg = (dataRaw, timePeriod, parameter) => {
 export const mom = (dataRaw, timePeriod, parameter) => {
 	try {
 		const currentCandle = dataRaw[dataRaw.length - 1];
-		const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod];
+		const nBarsAgoCandle = dataRaw[dataRaw.length - 1 - timePeriod] ?? 0;
 		const nBarsAgoCandleValue =
 			nBarsAgoCandle && nBarsAgoCandle[parameter] ? nBarsAgoCandle[parameter] : 0;
 

@@ -1,4 +1,4 @@
-export const UNSTABLEPERIOD = 0;
+export const UNSTABLEPERIOD = 30;
 
 export const API_TO_INDICATORS = {
 	'52WkHigh': '52 Week High',

@@ -45,10 +45,8 @@ export default class DataController {
 
 	static async apiGetLatestDataWithIndicators(req, res, next) {
 		const queryObject = req.body;
-		console.log('scanner endpoint receiving', {queryObject});
 
 		const result = await StockDataDAO.getSymbolWithIndicators(queryObject);
-		console.log('scanner endpoint sending', {result});
 
 		res.json(result);
 	}

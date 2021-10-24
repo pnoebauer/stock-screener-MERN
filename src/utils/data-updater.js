@@ -12,7 +12,9 @@ import util from 'util';
 import {API_TO_INDICATORS, SYMBOLS} from '../assets/constants';
 import {sleep, waitTillSecond} from './timing';
 
-import {StockDataDAO, ContinuousPricesDAO} from '../dao/price-data-DAO';
+// import {HistoricalDataDAO, LiveDataDAO} from '../dao/live-data-DAO';
+import HistoricalDataDAO from '../dao/historical-data-DAO';
+import LiveDataDAO from '../dao/live-data-DAO';
 
 import DataStreamCtrl from '../api/events.controller';
 
@@ -174,7 +176,7 @@ export class DataUpdates {
 				);
 				// console.log(data);
 
-				const insertStatus = await StockDataDAO.setHistoricalPrices(data);
+				const insertStatus = await HistoricalDataDAO.setHistoricalData(data);
 				// console.log(insertStatus);
 			} catch (e) {
 				console.error(`Error while fetching data and inserting into DB for ${e}`);
@@ -226,7 +228,7 @@ export class DataUpdates {
 		if (timerId) {
 			return;
 		} else {
-			const continuousData = await ContinuousPricesDAO.getContinuousPrices();
+			const continuousData = await LiveDataDAO.getLiveData();
 			// console.log(continuousData.priceData);
 			cachedData = continuousData.priceData;
 
@@ -304,7 +306,7 @@ export class ProcessContinuousData {
 			let filteredData = this.filterData(partialData);
 
 			// insert into DB
-			const res = await ContinuousPricesDAO.setContinuousPrices(filteredData);
+			const res = await LiveDataDAO.setLiveData(filteredData);
 			// console.log({res});
 
 			// console.log(filteredData);

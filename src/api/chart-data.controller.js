@@ -1,5 +1,4 @@
-import {StockDataDAO, ContinuousPricesDAO} from '../dao/price-data-DAO';
-import {DataUpdates} from '../utils/data-updater';
+import HistoricalDataDAO from '../dao/historical-data-DAO';
 
 export default class ChartDataController {
 	static async apiGetSampledStockData(req, res, next) {
@@ -7,12 +6,18 @@ export default class ChartDataController {
 
 		const {symbol, lookBack, samplePeriod, endDate} = queryObject;
 
-		const result = await StockDataDAO.getSampledHistoricalPrices({
-			ticker: symbol,
-			endDate: new Date(endDate),
-			interval: samplePeriod,
-			lookBack,
-		});
+		let parameterObj = {};
+		if (typeof symbol === 'string') {
+			parameterObj.ticker = symbol;
+		}
+		if (new Date(endDate) instanceof Date && isFinite(new Date(endDate))) {
+			parameterObj.endDate = new Date(endDate);
+		}
+		if (typeof samplePeriod === 'string') {
+			parameterObj.interval = samplePeriod;
+		}
+
+		const result = await HistoricalDataDAO.getSampledHistoricalData(parameterObj);
 
 		res.json(result);
 	}

@@ -1,11 +1,11 @@
 import {UNSTABLEPERIOD} from '../assets/constants';
 import * as calculateIndicators from '../utils/calculate-indicators';
 
-let stocks, continuousStockData;
+let stocks;
 
 const serialIndicators = ['reg', 'mom'];
 
-export class StockDataDAO {
+export default class HistoricalDataDAO {
 	static async injectDB(conn) {
 		if (stocks) {
 			return;
@@ -15,11 +15,11 @@ export class StockDataDAO {
 			stocks = await conn.db('stock_data').collection('historical_prices');
 			// await stocks.remove();
 		} catch (e) {
-			console.error(`Unable to establish collection handles in StockDataDAO: ${e}`);
+			console.error(`Unable to establish collection handles in HistoricalDataDAO: ${e}`);
 		}
 	}
 
-	static async getSampledHistoricalPrices({
+	static async getSampledHistoricalData({
 		// here's where the default parameters are set for the getMovies method
 		ticker = 'AAPL',
 		interval = 'month', //$dayOfMonth, $week, $month, $year
@@ -41,13 +41,6 @@ export class StockDataDAO {
 		let samplingQuery;
 
 		switch (interval) {
-			case 'day':
-				samplingQuery = {
-					day: {$dayOfMonth: '$datetime'},
-					month: {$month: '$datetime'},
-					year: {$year: '$datetime'},
-				};
-				break;
 			case 'week':
 				samplingQuery = {
 					week: {$week: '$datetime'},
@@ -63,6 +56,14 @@ export class StockDataDAO {
 				break;
 			case 'year':
 				samplingQuery = {
+					year: {$year: '$datetime'},
+				};
+				break;
+			// case 'day':
+			default:
+				samplingQuery = {
+					day: {$dayOfMonth: '$datetime'},
+					month: {$month: '$datetime'},
 					year: {$year: '$datetime'},
 				};
 				break;
@@ -90,10 +91,10 @@ export class StockDataDAO {
 				{$project: projectionObject},
 			];
 
+			// console.log({pipeline: pipeline[0]});
 			const aggregateResult = await stocks.aggregate(pipeline);
-
 			const stocksHistoryArr = await aggregateResult.toArray();
-			// console.log({stocksHistoryArr}, stocksHistoryArr.length);
+			// console.log({stocksHistoryArr, length: stocksHistoryArr.length});
 
 			return stocksHistoryArr;
 		} catch (e) {
@@ -202,7 +203,7 @@ export class StockDataDAO {
 			console.log({queryParameters, maxLookBack});
 
 			// retrieve data
-			const latestPriceData = await this.getSampledHistoricalPrices({
+			const latestPriceData = await this.getSampledHistoricalData({
 				ticker: queryObject.symbol,
 				lookBack: UNSTABLEPERIOD + maxLookBack,
 				projection: Array.from(queryParameters),
@@ -226,7 +227,7 @@ export class StockDataDAO {
 		}
 	}
 
-	static async getHistoricalPrices({
+	static async getHistoricalData({
 		// here's where the default parameters are set for the getMovies method
 		ticker = ['AAPL'],
 		filters = null,
@@ -272,7 +273,7 @@ export class StockDataDAO {
 		}
 	}
 
-	static async setHistoricalPrices(data) {
+	static async setHistoricalData(data) {
 		// var myDate = new Date('10/16/1995Z');
 
 		const {candles, symbol, empty} = data;
@@ -332,86 +333,6 @@ export class StockDataDAO {
 			return {success: true};
 		} catch (e) {
 			console.error(`Error occurred while updating stock, ${e}`, {data});
-			return {error: e};
-		}
-	}
-}
-
-export class ContinuousPricesDAO {
-	static async injectDB(conn) {
-		if (continuousStockData) {
-			return;
-		}
-		try {
-			continuousStockData = await conn.db('stock_data').collection('continuous_prices');
-			// await continuousStockData.remove();
-		} catch (e) {
-			console.error(
-				`Unable to establish collection handles in ContinuousPricesDAO: ${e}`
-			);
-		}
-	}
-	static async getContinuousPrices() {
-		let cursor;
-		let priceData = {};
-
-		try {
-			cursor = await continuousStockData.find({}, {projection: {_id: 0}});
-
-			// console.log(cursor.toArray());
-			// .project(project)
-			// .sort(sort);
-		} catch (e) {
-			console.error(`Unable to issue find command, ${e}`);
-			return {priceData, totalNumPrices: 0};
-		}
-
-		try {
-			const pricesList = await cursor.toArray();
-
-			// console.log(pricesList[0]);
-			const totalNumPrices = await continuousStockData.countDocuments();
-
-			for (let i = 0; i < pricesList.length; i++) {
-				const stockObject = pricesList[i];
-				const {ticker, ...rest} = stockObject;
-
-				priceData[ticker] = {...rest};
-			}
-
-			return {priceData, totalNumPrices};
-		} catch (e) {
-			console.error(
-				`Unable to convert cursor to array or problem counting documents, ${e}`
-			);
-			return {priceData, totalNumPrices: 0};
-		}
-	}
-
-	static async setContinuousPrices(data) {
-		// var myDate = new Date('10/16/1995Z');
-
-		const stockSymbols = Object.keys(data);
-
-		if (!stockSymbols.length) return;
-
-		try {
-			const stocksToInsert = stockSymbols.map(stockName => ({
-				updateOne: {
-					filter: {ticker: stockName},
-					update: {
-						$set: data[stockName],
-					},
-					upsert: true,
-				},
-			}));
-
-			const {nUpserted, nModified} = await continuousStockData.bulkWrite(stocksToInsert);
-			// console.log({nUpserted, nModified, stockNumber: stockSymbols.length});
-
-			return {success: true};
-		} catch (e) {
-			console.error(`Error occurred while updating continuous stocks, ${e}`);
 			return {error: e};
 		}
 	}

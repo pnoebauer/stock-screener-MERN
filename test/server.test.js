@@ -28,8 +28,53 @@ describe('testing-server-routes', () => {
 			samplePeriod: 'day',
 			endDate: '2021-10-16',
 		});
-
 		// console.log(body);
+
 		expect(body.length).toBeLessThanOrEqual(lookBack);
+	});
+
+	// controller should convert remove invalid parameters
+	test('POST /chart endpoint with invalid lookback', async () => {
+		const lookBack = 'invalid'; //provide invalid symbol
+
+		const {body} = await request(app).post('/api/v1/chart').send({
+			lookBack,
+		});
+		// console.log(body.length);
+
+		expect(body).toBeInstanceOf(Array);
+	});
+
+	test('POST /chart endpoint with invalid stock symbol', async () => {
+		const symbol = 'invalid'; //provide invalid lookback
+
+		const {body} = await request(app).post('/api/v1/chart').send({
+			symbol,
+		});
+		// console.log(body.length);
+
+		expect(body).toBeInstanceOf(Array);
+	});
+
+	test('POST /chart endpoint with invalid sample period', async () => {
+		const samplePeriod = 'invalid';
+
+		const {body} = await request(app).post('/api/v1/chart').send({
+			samplePeriod,
+		});
+		// console.log(body);
+
+		expect(body).toBeInstanceOf(Array);
+	});
+
+	test('POST /chart endpoint with invalid end date', async () => {
+		const endDate = 'invalid';
+
+		const {body} = await request(app).post('/api/v1/chart').send({
+			endDate,
+		});
+		// console.log(body);
+
+		expect(body).toBeInstanceOf(Array);
 	});
 });

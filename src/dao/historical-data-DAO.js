@@ -22,12 +22,13 @@ export default class HistoricalDataDAO {
 	static async getSampledHistoricalData({
 		// here's where the default parameters are set for the getMovies method
 		ticker = 'AAPL',
-		interval = 'month', //$dayOfMonth, $week, $month, $year
+		interval = 'day', //$dayOfMonth, $week, $month, $year
 		// endDate = new Date('2021-11-01'),
 		endDate = new Date(),
 		lookBack = 200,
 		projection,
 	} = {}) {
+		// console.log({endDate});
 		let projectionObject = {_id: 0};
 
 		if (projection) {
@@ -98,8 +99,8 @@ export default class HistoricalDataDAO {
 
 			return stocksHistoryArr;
 		} catch (e) {
-			console.error(`Unable to retrieve sampled stock history for ${ticker}: ${e}`);
-			return {error: e};
+			// console.error(`Unable to retrieve sampled stock history for ${ticker}: ${e}`);
+			throw e;
 		}
 	}
 

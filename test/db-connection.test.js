@@ -13,7 +13,6 @@ describe('Connection', () => {
 		const collectionNames = collections.map(elem => elem.name);
 
 		expect(collectionNames).toContain('historical_prices');
-
 		expect(collectionNames).toContain('continuous_prices');
 	});
 });

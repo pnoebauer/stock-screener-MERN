@@ -4,12 +4,12 @@ import {UNIVERSES} from '../src/assets/constants';
 
 import HistoricalDataDAO from '../src/dao/historical-data-DAO';
 
-describe('testing-server-routes', () => {
+describe('server routes testing for /prices and /universes endpoints', () => {
 	beforeAll(async () => {
 		await HistoricalDataDAO.injectDB(global.stockClient);
 	});
 
-	test('GET prices/test endpoint', async () => {
+	test('GET /prices/test endpoint', async () => {
 		const {body} = await request(app).get('/api/v1/prices/test'); //uses the request function that calls on express app instance
 		expect(body).toEqual('test');
 	});
@@ -17,6 +17,12 @@ describe('testing-server-routes', () => {
 	test('GET /universes endpoint', async () => {
 		const {body} = await request(app).get('/api/v1/universes');
 		expect(body).toEqual(UNIVERSES);
+	});
+});
+
+describe('server routes testing for /chart endpoints', () => {
+	beforeAll(async () => {
+		await HistoricalDataDAO.injectDB(global.stockClient);
 	});
 
 	test('POST /chart endpoint', async () => {

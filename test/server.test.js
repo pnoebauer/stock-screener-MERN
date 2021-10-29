@@ -18,12 +18,12 @@ describe('server routes testing for /prices and /universes endpoints', () => {
 		const {body} = await request(app).get('/api/v1/universes');
 		expect(body).toEqual(UNIVERSES);
 	});
-});
+	// });
 
-describe('server routes testing for /chart endpoints', () => {
-	beforeAll(async () => {
-		await HistoricalDataDAO.injectDB(global.stockClient);
-	});
+	// describe('server routes testing for /chart endpoints', () => {
+	// 	beforeAll(async () => {
+	// 		await HistoricalDataDAO.injectDB(global.stockClient);
+	// 	});
 
 	test('POST /chart endpoint', async () => {
 		const lookBack = 300;

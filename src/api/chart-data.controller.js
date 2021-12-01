@@ -17,6 +17,8 @@ export default class ChartDataController {
 			parameterObj.interval = samplePeriod;
 		}
 
+		parameterObj.lookBack = lookBack;
+
 		const result = await HistoricalDataDAO.getSampledHistoricalData(parameterObj);
 
 		res.json(result);

@@ -1,22 +1,45 @@
 version: 2
 jobs:
-  one:
+  build-server:
     docker:
-      - image: circleci/ruby:2.4.1
+      - image: circleci/node:8.9
+    # parallelism: 4
     steps:
       - checkout
-      - run: echo "A first hello"
-  two:
-    docker:
-      - image: circleci/ruby:2.4.1
-    steps:
-      - checkout
-      - run: echo "A second hello"
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - run: echo "npm installing server"
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+            - ~/.npm
+            - ~/.cache
+          key: v1-dependencies-{{ checksum "package.json" }}
+  # test:
+  #   docker:
+  #     - image: circleci/node:8.9
+  #   parallelism: 1
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys:
+  #           - v1-dependencies-{{ checksum "client/package.json" }}
+  #           - v1-dependencies-
+  #     - run: echo "npm testing server"
+  #     - run: npm install
+  #     - run: npm yarn test
+  #     - save_cache:
+  #         paths:
+  #           - client/node_modules
+  #           - ~/.npm
+  #           - ~/.cache
+  #         key: v1-dependencies-{{ checksum "package.json" }}
 workflows:
   version: 2
-  one_and_two:
+  build_test:
     jobs:
-      - one
-      - two:
-          requires:
-            - one
+      - build
+      # - test

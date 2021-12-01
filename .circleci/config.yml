@@ -12,6 +12,7 @@ jobs:
             - v1-dependencies-
       - run: echo "npm installing server"
       - run: npm install
+      - run: npm run build
       - save_cache:
           paths:
             - node_modules

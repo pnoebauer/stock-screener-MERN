@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:current
     # parallelism: 4
     steps:
       - checkout
@@ -20,7 +20,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
   test:
     docker:
-      - image: circleci/node:8.9
+      - image: circleci/node:current
     parallelism: 1
     steps:
       - checkout

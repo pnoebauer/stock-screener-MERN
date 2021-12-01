@@ -11,7 +11,8 @@
 		"build": "npm run clean && npm run build-babel",
 		"start": "npm run build && node ./build/index.js",
 		"dev": "nodemon ./src/index.js --exec babel-node --presets @babel/preset-env",
-		"test": "jest --passWithNoTests --watch"
+		"test": "jest --passWithNoTests",
+		"test-watch": "jest --passWithNoTests --watch"
 	},
 	"dependencies": {
 		"@babel/cli": "^7.15.7",

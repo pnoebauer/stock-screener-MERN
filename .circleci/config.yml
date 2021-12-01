@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-server:
+  build:
     docker:
       - image: circleci/node:8.9
     # parallelism: 4

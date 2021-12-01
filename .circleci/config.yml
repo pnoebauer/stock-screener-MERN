@@ -30,7 +30,7 @@ jobs:
             - v1-dependencies-
       - run: echo "npm testing server"
       - run: npm install
-      - run: npm yarn test
+      - run: npm test
       - save_cache:
           paths:
             - node_modules

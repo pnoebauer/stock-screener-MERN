@@ -16,8 +16,9 @@ export default class ChartDataController {
 		if (typeof samplePeriod === 'string') {
 			parameterObj.interval = samplePeriod;
 		}
-
-		parameterObj.lookBack = lookBack;
+		if (typeof lookBack === 'number') {
+			parameterObj.lookBack = lookBack;
+		}
 
 		const result = await HistoricalDataDAO.getSampledHistoricalData(parameterObj);
 

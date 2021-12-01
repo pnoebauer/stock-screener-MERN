@@ -39,6 +39,19 @@ describe('server routes testing for /prices and /universes endpoints', () => {
 		expect(body.length).toBeLessThanOrEqual(lookBack);
 	});
 
+	test('POST /chart endpoint with lookBack smaller than default', async () => {
+		const lookBack = 50;
+
+		const {body} = await request(app).post('/api/v1/chart').send({
+			symbol: 'AAPL',
+			lookBack,
+			samplePeriod: 'day',
+		});
+		// console.log(body);
+
+		expect(body.length).toBeLessThanOrEqual(lookBack);
+	});
+
 	// controller should convert remove invalid parameters
 	test('POST /chart endpoint with invalid lookback', async () => {
 		const lookBack = 'invalid'; //provide invalid symbol
